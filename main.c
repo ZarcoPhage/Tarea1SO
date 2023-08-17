@@ -96,10 +96,10 @@ void procesarTxt(const char* nombre_archivo){
         //puts(matrix[i]);
         //matrix[i] = (char*)malloc( ( matrixSize*sizeof(char) ) );
     }
-    
-    for(int i = 0; i<matrixSize;i++){
-        puts(matrix[i]);
-    }
+    printf("%d\n", matrixSize);
+    //for(int i = 0; i<matrixSize;i++){
+    //    puts(matrix[i]);
+    //}
 
     for(int i = 0; i<matrixSize;i++){
         free(matrix[i]);
