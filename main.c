@@ -72,6 +72,8 @@ void procesarTxt(const char* nombre_archivo){
     };*/
     int matrixSize = (leidosFst - 1 )/2;
 
+    
+
     char** matrix = (char**)malloc( (matrixSize*sizeof(char*) ));
 
     matrix[0] = (char*)malloc( (leidosFst*sizeof(char)) );
@@ -97,15 +99,17 @@ void procesarTxt(const char* nombre_archivo){
         //matrix[i] = (char*)malloc( ( matrixSize*sizeof(char) ) );
     }
     printf("%d\n", matrixSize);
-    //for(int i = 0; i<matrixSize;i++){
-    //    puts(matrix[i]);
-    //}
+    for(int i = 0; i<matrixSize;i++){
+        puts(matrix[i]);
+    }
 
     for(int i = 0; i<matrixSize;i++){
         free(matrix[i]);
     }
 
     free(matrix);
+    free(orientacion);
+    free(fstLine);
 
     fclose(archivo);
 }
@@ -137,7 +141,7 @@ int main(){
         
         }
     }
-
+    printf("cantidad archivos procesados = %d", cantidad_sopas);
     closedir(directory);
     return 0;
 }
