@@ -15,8 +15,10 @@ void generate(int matrix_size, int orient, string word){
 
     word.append(".txt");
     
+    string path = "testCases/" + word;
+
     fstream file;
-    file.open(word, ios::out);
+    file.open(path, ios::out);
     if(!file){
         cout<<"failed operation"<<endl;
         return;
@@ -93,7 +95,7 @@ int main(){
     string word;
 
     for (int i = 0; i < cant_files; i++){
-        cout<<"ingrese palabra a ocultar"; cin>>word;
+        cout<<"ingrese palabra a ocultar: "; cin>>word;
         generate(matrix_size, orient, word);
 
     }

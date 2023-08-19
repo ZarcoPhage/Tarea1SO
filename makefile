@@ -21,3 +21,13 @@ clean:
 	rm $(FILE)
 	rm -r clasificacion
 
+all_gen: build_g run_g clean_g
+
+build_g:
+	g++ generator.cpp -o generator -Wall
+
+run_g: 
+	./generator
+
+clean_g:
+	rm generator

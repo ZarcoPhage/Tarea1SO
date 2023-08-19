@@ -28,7 +28,7 @@ int main(){
         
         if ( strstr(entrada->d_name, ".txt") != NULL){
             cantidad_sopas++;
-            //printf(" %s\n", entrada->d_name);    
+            printf("archivo en proceso: %s\n", entrada->d_name);    
             procesarTxt(entrada->d_name);
             //puts("archivo procesado");
         
