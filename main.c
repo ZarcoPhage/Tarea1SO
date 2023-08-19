@@ -4,6 +4,8 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
+#include "funciones.h"
+#include <ctype.h>
 
 int directory_initalization(){
     if ( (mkdir("./clasificacion", S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) == -1){
@@ -180,10 +182,31 @@ void procesarTxt(const char* nombre_archivo){
         //puts(matrix[i]);
         //matrix[i] = (char*)malloc( ( matrixSize*sizeof(char) ) );
     }
-    printf("%d\n", matrixSize);
+    printf("%s %d\n", nombre_archivo, (int)strlen(nombre_archivo));
 
     fclose(archivo);
 
+
+    int dir_palabra = 0;
+    if ((strncmp(orientacion, "horizontal",2)==0) || (strncmp( orientacion, "Horizontal",2)==0)){
+        dir_palabra=1;
+    }
+    int largo_palabra= strlen(nombre_archivo)-4;
+    char palabra[largo_palabra];
+    int contador =0;
+    while (contador <=largo_palabra){
+        if(nombre_archivo[contador]== '.'){
+            palabra[contador] = '\0';
+            break;
+        }
+        palabra[contador] = toupper(nombre_archivo[contador]);
+        contador++;
+    }
+
+    if (dir_palabra == 1){
+        printf("resultado horizontal = %d\n", s_horizontal(palabra,matrix,matrixSize));
+    }
+    else printf("resultado vertical= %d\n", s_vertical(palabra,matrix,matrixSize));
 
     //for(int i = 0; i<matrixSize;i++){
     //    puts(matrix[i]);
