@@ -40,10 +40,93 @@ int directory_initalization(){
     return 1;
 }
 
+void concat(char* buffer, int buf_size, char* s1, char* s2){
+    int i,j,k;
+    //printf("string a concat: %s %s\n", s1,s2);
+    j=0;
+    for(k = 0; k<(int)strlen(s1); k++){
+        buffer[j] = s1[k];
+        j++;
+    }
+    for(i = 0; i<(int)strlen(s2);i++){
+        buffer[j] = s2[i];
+        //puts(buffer);
+        j++;
+    }
+    buffer[j] = '\0';
+    //printf("buffer final: %s\n", buffer);
+}
+
+int moveFile(const char* nombre_archivo, char* orientacion, int matrixSize){
+    char* base_old_path = "./testCases/";
+   
+    int old_path_len = (int)strlen(base_old_path) + (int)strlen(nombre_archivo);
+    char* old_path = (char*)malloc(sizeof(char)*old_path_len);
+
+    concat(old_path, old_path_len, base_old_path, (char*)nombre_archivo);
+    //printf("final size: %d\n", (int)strlen(old_path));
+
+    int new_path_len;
+    char* new_path;
+
+    if ( (strncmp(orientacion, "vertical",2) == 0) || ((strncmp(orientacion, "Vertical",2)) == 0) ){
+        printf("mSiz: %d\n", matrixSize);
+        switch (matrixSize){
+            case 50:
+                puts("in 50");
+                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/50x50/");
+                new_path = (char*)malloc(sizeof(char)*new_path_len);
+                concat(new_path, new_path_len, "./clasificacion/Vertical/50x50/", (char*)nombre_archivo);
+                break;
+            case 100:
+                puts("in 100");
+                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/100x100/");
+                new_path = (char*)malloc(sizeof(char)*new_path_len);
+                concat(new_path, new_path_len, "./clasificacion/Vertical/100x100/", (char*)nombre_archivo);
+                break;
+            case 200:
+                puts("in 200");
+                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/200x200/");
+                new_path = (char*)malloc(sizeof(char)*new_path_len);
+                concat(new_path, new_path_len, "./clasificacion/Vertical/200x200/", (char*)nombre_archivo);
+                break;
+        }
+    }else{
+        switch (matrixSize){
+            case 50:
+
+                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/50x50/");
+                new_path = (char*)malloc(sizeof(char)*new_path_len);
+                concat(new_path, new_path_len, "./clasificacion/Horizontal/50x50/", (char*)nombre_archivo);
+                break;
+            case 100:
+                
+                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/100x100/");
+                new_path = (char*)malloc(sizeof(char)*new_path_len);
+                concat(new_path, new_path_len, "./clasificacion/Horizontal/100x100/", (char*)nombre_archivo);
+                break;
+            case 200:
+
+                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/200x200/");
+                new_path = (char*)malloc(sizeof(char)*new_path_len);
+                concat(new_path, new_path_len, "./clasificacion/Horizontal/200x200/", (char*)nombre_archivo);
+                break;
+        }
+    }
+
+    const char* src = old_path;
+    const char* dest = new_path;
+    if (rename(src,dest) == -1){
+        return 0;
+    }
+    free(old_path); free(new_path);
+    return 1;
+}
+
 void procesarTxt(const char* nombre_archivo){
     char path[] = "testCases/";
     strcat(path,nombre_archivo);
-    puts(path);
+    //puts(path);
     FILE* archivo;
     archivo = fopen(path, "r");
     if (archivo == NULL){
@@ -72,7 +155,6 @@ void procesarTxt(const char* nombre_archivo){
     };*/
     int matrixSize = (leidosFst - 1 )/2;
 
-    
 
     char** matrix = (char**)malloc( (matrixSize*sizeof(char*) ));
 
@@ -99,27 +181,33 @@ void procesarTxt(const char* nombre_archivo){
         //matrix[i] = (char*)malloc( ( matrixSize*sizeof(char) ) );
     }
     printf("%d\n", matrixSize);
-    for(int i = 0; i<matrixSize;i++){
-        puts(matrix[i]);
+
+    fclose(archivo);
+
+
+    //for(int i = 0; i<matrixSize;i++){
+    //    puts(matrix[i]);
+    //}
+
+    if (moveFile(nombre_archivo,orientacion,matrixSize) == 0){
+        puts("error clasificando archivo");
     }
 
+    //segmento de liberacion de memoria
     for(int i = 0; i<matrixSize;i++){
         free(matrix[i]);
     }
-
     free(matrix);
     free(orientacion);
     free(fstLine);
 
-    fclose(archivo);
 }
 
 int main(){
     //realizar validacion de directorios
-    //if (directory_initalization() == 0){
-    //    puts("error creando directorios");
-    //    return 0;
-    //}
+    if (directory_initalization() == 0){
+        puts("directorios ya creados");
+    }
     
     DIR* directory = opendir("./testCases");
     struct dirent* entrada;
@@ -137,7 +225,7 @@ int main(){
             cantidad_sopas++;
             //printf(" %s\n", entrada->d_name);    
             procesarTxt(entrada->d_name);
-            puts("archivo procesado");
+            //puts("archivo procesado");
         
         }
     }
