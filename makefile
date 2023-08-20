@@ -9,7 +9,7 @@ ZIPFILE = Archivos_de_prueba.zip
 all: build unzip run
 
 build:
-	gcc $(SOURCES) -o $(FILE) -Wall
+	gcc $(SOURCES) -o $(FILE) -ggdb3 -Wall
 	
 unzip:
 	unzip testCases/$(ZIPFILE) -d ./testCases

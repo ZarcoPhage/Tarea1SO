@@ -217,14 +217,27 @@ void procesarTxt(const char* nombre_archivo){
     matrix[0] = (char*)malloc( (leidosFst*sizeof(char)) );
 
     strncpy(matrix[0],fstLine,leidosFst);
+    free(fstLine);
     //puts(matrix[0]);
 
     size_t largoLin = 0;
     //ssize_t leidosLin;
-    
+    puts("-DUMMY-");
+
+    char* line = NULL;
+
     for(int i = 1; i<matrixSize;i++){
-        //leidosLin = 
-        getline(&matrix[i],&largoLin,archivo);
+        
+        matrix[i] = (char*)malloc( (matrixSize*2 +1) * sizeof(char) );
+        
+        getline(&line,&largoLin,archivo);
+        
+        strncpy(matrix[i],line,leidosFst);
+        
+        free(line);
+
+        line = NULL;
+
         largoLin=0;
         //printf("%ld %s",leidosLin,matrix[i]);
         /*
@@ -240,7 +253,6 @@ void procesarTxt(const char* nombre_archivo){
     //printf("%s %d\n", nombre_archivo, (int)strlen(nombre_archivo));
 
     fclose(archivo);
-
 
     int dir_palabra = 0;
     if ((strncmp(orientacion, "horizontal",2)==0) || (strncmp( orientacion, "Horizontal",2)==0)){
@@ -275,6 +287,11 @@ void procesarTxt(const char* nombre_archivo){
         printf("tiempo de ejecucion: %f\n", exec_t);
     }
 
+    for(int i = 0; i<matrixSize;i++){
+        free(matrix[i]);
+    }
+    free(matrix);
+
     //for(int i = 0; i<matrixSize;i++){
     //    puts(matrix[i]);
     //}
@@ -284,11 +301,7 @@ void procesarTxt(const char* nombre_archivo){
     }
 
     //segmento de liberacion de memoria
-    for(int i = 0; i<matrixSize;i++){
-        free(matrix[i]);
-    }
-    free(matrix);
-    free(orientacion);
-    free(fstLine);
+    
 
+    free(orientacion);
 }
