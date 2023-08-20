@@ -181,8 +181,9 @@ int moveFile(const char* nombre_archivo, char* orientacion, int matrixSize){
 }
 
 void procesarTxt(const char* nombre_archivo){
-    char path[] = "testCases/";
-    strcat(path,nombre_archivo);
+    char* base_path = "testCases/";
+    char* path = (char*)malloc(sizeof(char)*(strlen(nombre_archivo)+strlen(base_path)+1));
+    concat(path,strlen(nombre_archivo)+strlen(base_path)+1,base_path,(char*)nombre_archivo);
     //puts(path);
     FILE* archivo;
     archivo = fopen(path, "r");
