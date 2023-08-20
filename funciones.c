@@ -117,7 +117,7 @@ void concat(char* buffer, int buf_size, char* s1, char* s2){
 int moveFile(const char* nombre_archivo, char* orientacion, int matrixSize){
     char* base_old_path = "./testCases/";
    
-    int old_path_len = (int)strlen(base_old_path) + (int)strlen(nombre_archivo);
+    int old_path_len = (int)strlen(base_old_path) + (int)strlen(nombre_archivo)+1;
     char* old_path = (char*)malloc(sizeof(char)*old_path_len);
 
     concat(old_path, old_path_len, base_old_path, (char*)nombre_archivo);
@@ -131,19 +131,19 @@ int moveFile(const char* nombre_archivo, char* orientacion, int matrixSize){
         switch (matrixSize){
             case 50:
                 //puts("in 50");
-                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/50x50/");
+                new_path_len = 1+(int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/50x50/");
                 new_path = (char*)malloc(sizeof(char)*new_path_len);
                 concat(new_path, new_path_len, "./clasificacion/Vertical/50x50/", (char*)nombre_archivo);
                 break;
             case 100:
                 //puts("in 100");
-                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/100x100/");
+                new_path_len = 1+(int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/100x100/");
                 new_path = (char*)malloc(sizeof(char)*new_path_len);
                 concat(new_path, new_path_len, "./clasificacion/Vertical/100x100/", (char*)nombre_archivo);
                 break;
             case 200:
                 //puts("in 200");
-                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/200x200/");
+                new_path_len = 1+(int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Vertical/200x200/");
                 new_path = (char*)malloc(sizeof(char)*new_path_len);
                 concat(new_path, new_path_len, "./clasificacion/Vertical/200x200/", (char*)nombre_archivo);
                 break;
@@ -152,19 +152,19 @@ int moveFile(const char* nombre_archivo, char* orientacion, int matrixSize){
         switch (matrixSize){
             case 50:
 
-                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/50x50/");
+                new_path_len = 1+(int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/50x50/");
                 new_path = (char*)malloc(sizeof(char)*new_path_len);
                 concat(new_path, new_path_len, "./clasificacion/Horizontal/50x50/", (char*)nombre_archivo);
                 break;
             case 100:
                 
-                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/100x100/");
+                new_path_len = 1+(int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/100x100/");
                 new_path = (char*)malloc(sizeof(char)*new_path_len);
                 concat(new_path, new_path_len, "./clasificacion/Horizontal/100x100/", (char*)nombre_archivo);
                 break;
             case 200:
 
-                new_path_len = (int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/200x200/");
+                new_path_len = 1+(int)strlen(nombre_archivo) + (int)strlen("./clasificacion/Horizontal/200x200/");
                 new_path = (char*)malloc(sizeof(char)*new_path_len);
                 concat(new_path, new_path_len, "./clasificacion/Horizontal/200x200/", (char*)nombre_archivo);
                 break;
