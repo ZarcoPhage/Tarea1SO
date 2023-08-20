@@ -216,7 +216,7 @@ void procesarTxt(const char* nombre_archivo){
 
     matrix[0] = (char*)malloc( (leidosFst*sizeof(char)) );
 
-    strcpy(matrix[0],fstLine);
+    strncpy(matrix[0],fstLine,leidosFst);
     //puts(matrix[0]);
 
     size_t largoLin = 0;
