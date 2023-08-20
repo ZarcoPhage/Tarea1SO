@@ -223,7 +223,6 @@ void procesarTxt(const char* nombre_archivo){
 
     size_t largoLin = 0;
     //ssize_t leidosLin;
-    puts("-DUMMY-");
 
     char* line = NULL;
 
