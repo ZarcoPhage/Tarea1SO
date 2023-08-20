@@ -31,3 +31,8 @@ run_g:
 
 clean_g:
 	rm generator
+
+all_opt: build_opt unzip run
+
+build_opt:
+	gcc classifier.c funcionesopt.c -o classifier -Wall

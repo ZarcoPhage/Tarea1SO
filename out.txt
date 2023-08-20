@@ -1,0 +1,53 @@
+gcc classifier.c funciones.c -o classifier -Wall
+unzip testCases/Archivos_de_prueba.zip -d ./testCases
+Archive:  testCases/Archivos_de_prueba.zip
+  inflating: ./testCases/Jamon.txt   
+  inflating: ./testCases/perro.txt   
+  inflating: ./testCases/tapia.txt   
+  inflating: ./testCases/viktor.txt  
+  inflating: ./testCases/banco.txt   
+  inflating: ./testCases/Carne.txt   
+  inflating: ./testCases/carro.txt   
+  inflating: ./testCases/casa.txt    
+  inflating: ./testCases/Cobre.txt   
+  inflating: ./testCases/Gamer.txt   
+  inflating: ./testCases/gato.txt    
+  inflating: ./testCases/hola.txt    
+./classifier
+archivo en proceso: Jamon.txt
+resultado vertical= 1
+tiempo de ejecucion: 0.000019
+archivo en proceso: perro.txt
+resultado horizontal = 1
+tiempo de ejecucion: 0.000006
+archivo en proceso: tapia.txt
+resultado horizontal = 1
+tiempo de ejecucion: 0.000006
+archivo en proceso: viktor.txt
+resultado horizontal = 1
+tiempo de ejecucion: 0.000030
+archivo en proceso: banco.txt
+resultado horizontal = 1
+tiempo de ejecucion: 0.000139
+archivo en proceso: Carne.txt
+resultado vertical= 1
+tiempo de ejecucion: 0.000042
+archivo en proceso: carro.txt
+resultado vertical= 1
+tiempo de ejecucion: 0.000014
+archivo en proceso: casa.txt
+resultado horizontal = 1
+tiempo de ejecucion: 0.000002
+archivo en proceso: Cobre.txt
+resultado horizontal = 1
+tiempo de ejecucion: 0.000099
+archivo en proceso: Gamer.txt
+resultado vertical= 1
+tiempo de ejecucion: 0.000025
+archivo en proceso: gato.txt
+resultado vertical= 1
+tiempo de ejecucion: 0.000004
+archivo en proceso: hola.txt
+resultado vertical= 1
+tiempo de ejecucion: 0.000014
+cantidad archivos procesados = 12
