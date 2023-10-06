@@ -76,6 +76,10 @@ casilla*** loadMaps(){
     char* linea = NULL;
     size_t largoLin = 0;
     int y_cas = 0;
+    int prob1, prob2;
+    int tesoro, especial; //ints pero que son tratados como booleanos para marcar cuando aparezca un tesoro o especial
+    int tesoro_count = 4;
+    int probT, probEsp;
 
     while ((entrada=readdir(directory)) && (file_count < 9) ){
         if ( strstr(entrada->d_name, ".txt") != NULL){
@@ -87,16 +91,23 @@ casilla*** loadMaps(){
             concat(path,strlen(nombre_archivo)+strlen(base_path)+1,base_path,(char*)nombre_archivo); //guarda el path del archivo a abrir
             
             //puts(path);
-            
+
             FILE* archivo;
             archivo = fopen(path, "r");
             if (archivo == NULL){
                 printf("error abriendo archivo: %s\n", nombre_archivo);
                 return mapas;
             }
+            
+            probT = rand()%100;
+            if (probT > 50){
+                tesoro = 1;
+            }
 
             for (int i = 0; i<5;i++){
                 getline(&linea,&largoLin,archivo);
+
+    
 
                 //printf("%s\n",linea);
 
@@ -104,7 +115,87 @@ casilla*** loadMaps(){
 
                 while (token != NULL){
                     //printf("%d %d %d\n",file_count,i,y_cas);
-                    strncpy(mapas[file_count][i][y_cas].contenido,token,2);
+                    /*
+                    printf("token: %s\n",token);
+                    for (int i = 0;i<2;i++){
+                        switch (token[i]){
+                            case '\n':
+                                printf("\\n");
+                                break;
+                            case '\r':
+                                printf("\\r");
+                                break;
+                            case '\t':
+                                printf("\\t");
+                                break;
+                        }
+                    }*/
+
+                    prob1 = rand() % 100; //probabilidad casillas especiales
+                    prob2 = rand() % 100; //prob tesoro
+                    probEsp = rand() %100;
+                
+                    if (strncmp(token,"0",2) == 0 ){
+                        if ((probEsp < 15)&&(especial == 0) && (file_count != 0) ){
+                            if (prob1 < 25){
+                                token = "Bc";
+                            }
+                            if ((prob1 > 25)&&(prob1 < 50)){
+                                token = "Bt";
+                            }
+                            if ((prob1 > 50)&&(prob1 < 75)){
+                                token = "Bn";
+                            }
+                            if (prob1 > 75){
+                                token = "TP";
+                            }
+
+                            especial = 1;
+                        }
+                        if ((prob2 < 25) && (tesoro == 0) && (file_count != 0) && (tesoro_count > 0)){
+                            token = "T";
+                            tesoro = 1;
+                            tesoro_count--;
+                        }
+
+                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);    
+                    }
+                    if (strncmp(token,"0\r",2)==0){
+                        token = "0";
+                        if ((probEsp < 15)&&(especial == 0) && (file_count != 0) ){
+                            if (prob1 < 25){
+                                token = "Bc";
+                            }
+                            if ((prob1 > 25)&&(prob1 < 50)){
+                                token = "Bt";
+                            }
+                            if ((prob1 > 50)&&(prob1 < 75)){
+                                token = "Bn";
+                            }
+                            if (prob1 > 75){
+                                token = "TP";
+                            }
+
+                            especial = 1;
+                        }
+                        if ((prob2 < 25) && (tesoro == 0) && (file_count != 0) && (tesoro_count > 0)){
+                            token = "T";
+                            tesoro = 1;
+                            tesoro_count--;
+                        }
+                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);   
+                    }
+                    if (strncmp(token,"B\r",2)==0){
+                        token = "B";
+                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);
+                    }
+                    if (strncmp(token,"/\r",2)==0){
+                        token = "/";
+                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);   
+                    }else{
+                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);
+                    }
+                    
                     //mapas[file_count][i][y_cas].contenido = token;
                     y_cas++;
                     //mapas[file_count][i][y_cas].contenido[1] = token[1];
@@ -117,7 +208,8 @@ casilla*** loadMaps(){
                 linea=NULL;
             }
             file_count++;
-
+            tesoro = 0;
+            especial = 0;
         }
     }
 
