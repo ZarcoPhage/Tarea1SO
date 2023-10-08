@@ -63,7 +63,7 @@ void loadMaps(juego* game, int** tps_list){
 
     int probRol;
 
-    for (int i = 0; i<3;i++){
+    for (int i = 0; i<4;i++){
         probRol = rand()%100;
         if (probRol<50){ // IDROL 1 ES BUSCAR, IDROL 2 ES ESCALERAS
             game->jugadores[i].rol = 1;
@@ -252,35 +252,35 @@ void loadMaps(juego* game, int** tps_list){
                     }
 
                     if (strncmp(token,"J1",2) == 0){
-                        printf("jug1 encontrado en: %d %d %d",y_cas,i,file_count);
+                        //printf("jug1 encontrado en: %d %d %d",y_cas,i,file_count);
                         game->jugadores[0].posX = y_cas;
                         game->jugadores[0].posY = i;
                         game->jugadores[0].posZ = file_count;
-                        printf("pos jug: %d %d %d \n",game->jugadores[0].posX,game->jugadores[0].posY,game->jugadores[0].posZ);
+                        //printf("pos jug: %d %d %d \n",game->jugadores[0].posX,game->jugadores[0].posY,game->jugadores[0].posZ);
                         strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     if (strncmp(token,"J2",2) == 0){
-                        printf("jug2 encontrado en: %d %d %d",y_cas,i,file_count);
+                        //printf("jug2 encontrado en: %d %d %d",y_cas,i,file_count);
                         game->jugadores[1].posX = y_cas;
                         game->jugadores[1].posY = i;
                         game->jugadores[1].posZ = file_count;
-                        printf("pos jug: %d %d %d \n",game->jugadores[1].posX,game->jugadores[1].posY,game->jugadores[1].posZ);
+                        //printf("pos jug: %d %d %d \n",game->jugadores[1].posX,game->jugadores[1].posY,game->jugadores[1].posZ);
                         strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     if (strncmp(token,"J3",2) == 0){
-                        printf("jug3 encontrado en: %d %d %d",y_cas,i,file_count);
+                        //printf("jug3 encontrado en: %d %d %d",y_cas,i,file_count);
                         game->jugadores[2].posX = y_cas;
                         game->jugadores[2].posY = i;
                         game->jugadores[2].posZ = file_count;
-                        printf("pos jug: %d %d %d \n",game->jugadores[2].posX,game->jugadores[2].posY,game->jugadores[2].posZ);
+                        //printf("pos jug: %d %d %d \n",game->jugadores[2].posX,game->jugadores[2].posY,game->jugadores[2].posZ);
                         strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     if (strncmp(token,"J4",2) == 0){
-                        printf("jug4 encontrado en: %d %d %d",y_cas,i,file_count);
+                        //printf("jug4 encontrado en: %d %d %d",y_cas,i,file_count);
                         game->jugadores[3].posX = y_cas;
                         game->jugadores[3].posY = i;
                         game->jugadores[3].posZ = file_count;
-                        printf("pos jug: %d %d %d \n",game->jugadores[3].posX,game->jugadores[3].posY,game->jugadores[3].posZ);
+                        //printf("pos jug: %d %d %d \n",game->jugadores[3].posX,game->jugadores[3].posY,game->jugadores[3].posZ);
                         strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     else{
@@ -331,10 +331,15 @@ int main(){
     tps = (int**)malloc(8*sizeof(int*));
     for (int i = 0; i < 8;i++){
         tps[i] = (int*)malloc(3*sizeof(int));
+        tps[i][0] = 666;
+        tps[i][1] = 666;
+        tps[i][2] = 666;
     }
 
     loadMaps(&game,tps);
 
+
+    /*
     for (int i = 0;i < 8;i++){
         printf("%d %d %d\n", tps[i][0], tps[i][1], tps[i][2]);
     }
@@ -347,7 +352,7 @@ int main(){
             }
             printf("\n");
         }
-    }
+    }*/
 
     int rounds = 15;
 
@@ -365,13 +370,30 @@ int main(){
 
     pid_t map_ppid;
     pid_t pidj1,pidj2,pidj3,pidj4;
+    int num_act;
 
     map_ppid = getpid();
     //printf("map %d",map_ppid);
 
+    puts("Bienvenido a magic maze!");
+
+    printf("%d %d %d %d\n", game.jugadores[0].rol,game.jugadores[1].rol,game.jugadores[2].rol,game.jugadores[3].rol);
+
+
     for (int i = 0; i<rounds; i++){
+        printf("RONDA %d\n",i+1);
+
         pidj1 = fork();
         if (pidj1==0){
+            if (game.jugadores[0].rol == 1){ //rol buscar
+                printf("TURNO J1\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
+            if (game.jugadores[0].rol == 2){ //rol explore
+                printf("TURNO J1\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
+
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
             
@@ -380,6 +402,14 @@ int main(){
         }
         pidj2 = fork();
         if (pidj2==0){
+            if (game.jugadores[1].rol == 1){ //rol buscar
+                printf("TURNO J2\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
+            if (game.jugadores[1].rol == 2){ //rol explore
+                printf("TURNO J2\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
             
@@ -388,6 +418,14 @@ int main(){
         }
         pidj3 = fork();
         if (pidj3==0){
+            if (game.jugadores[2].rol == 1){ //rol buscar
+                printf("TURNO J3\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
+            if (game.jugadores[2].rol == 2){ //rol explore
+                printf("TURNO J3\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
             
@@ -396,6 +434,14 @@ int main(){
         }
         pidj4 = fork();
         if (pidj4==0){
+            if (game.jugadores[3].rol == 1){ //rol buscar
+                printf("TURNO J4\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
+            if (game.jugadores[3].rol == 2){ //rol explore
+                printf("TURNO J4\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                scanf("%d", &num_act);
+            }
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
         }else{
