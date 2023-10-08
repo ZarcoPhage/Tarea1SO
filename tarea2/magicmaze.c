@@ -12,6 +12,14 @@ typedef struct {
     char* contenido;
 } casilla;
 
+typedef struct {
+    casilla** mapa;
+    struct map* norte;
+    struct map* sur;
+    struct map* izq;
+    struct map* der;
+} map;
+
 void concat(char* buffer, int buf_size, char* s1, char* s2){
     int i,j,k;
     //printf("string a concat: %s %s\n", s1,s2);
@@ -29,7 +37,7 @@ void concat(char* buffer, int buf_size, char* s1, char* s2){
     //printf("buffer final: %s\n", buffer);
 }
 
-casilla*** loadMaps(){
+map* loadMaps(){
     int num_tableros = 9; //numero de tableros a procesar
 
     DIR* directory = opendir("./maps"); //directorio con los tableros
@@ -37,16 +45,20 @@ casilla*** loadMaps(){
     
     //mapa->tablero->lineas->casillas/fichas
 
-    casilla*** mapas;
+    map* mapas;
     
-    mapas = (casilla***)malloc(num_tableros*sizeof(casilla**));
+    mapas = (map*)malloc(num_tableros*sizeof(map));
     
     for (int i = 0; i<num_tableros; i++){
-        mapas[i] = (casilla**)malloc(5*sizeof(casilla*));
+        mapas[i].mapa = (casilla**)malloc(5*sizeof(casilla*));
+        mapas[i].norte = NULL;
+        mapas[i].sur = NULL;
+        mapas[i].izq = NULL;
+        mapas[i].der = NULL;
         for (int j = 0; j<5;j++){
-            mapas[i][j] = (casilla*)malloc(5*sizeof(casilla));
+            mapas[i].mapa[j] = (casilla*)malloc(5*sizeof(casilla));
             for (int k = 0; k<5;k++){
-                mapas[i][j][k].contenido = (char*)malloc(2*sizeof(char));
+                mapas[i].mapa[j][k].contenido = (char*)malloc(2*sizeof(char));
                 //mapas[i][j][k].contenido[0] = '0';
                 //mapas[i][j][k].contenido[1] = '0';
             }
@@ -153,12 +165,25 @@ casilla*** loadMaps(){
                             especial = 1;
                         }
                         if ((prob2 < 25) && (tesoro == 0) && (file_count != 0) && (tesoro_count > 0)){
-                            token = "T";
+                            switch (tesoro_count){
+                                case 1:
+                                    token = "T1";
+                                    break;
+                                case 2:
+                                    token = "T2";
+                                    break;
+                                case 3:
+                                    token = "T3";
+                                    break;
+                                case 4:
+                                    token = "T4";
+                                    break;
+                            }
                             tesoro = 1;
                             tesoro_count--;
                         }
 
-                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);    
+                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);    
                     }
                     if (strncmp(token,"0\r",2)==0){
                         token = "0";
@@ -179,21 +204,35 @@ casilla*** loadMaps(){
                             especial = 1;
                         }
                         if ((prob2 < 25) && (tesoro == 0) && (file_count != 0) && (tesoro_count > 0)){
-                            token = "T";
+                            switch (tesoro_count){
+                                case 1:
+                                    token = "T1";
+                                    break;
+                                case 2:
+                                    token = "T2";
+                                    break;
+                                case 3:
+                                    token = "T3";
+                                    break;
+                                case 4:
+                                    token = "T4";
+                                    break;
+                            }
+                            
                             tesoro = 1;
                             tesoro_count--;
                         }
-                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);   
+                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);   
                     }
                     if (strncmp(token,"B\r",2)==0){
                         token = "B";
-                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);
+                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     if (strncmp(token,"/\r",2)==0){
                         token = "/";
-                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);   
+                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);   
                     }else{
-                        strncpy(mapas[file_count][i][y_cas].contenido,token,2);
+                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     
                     //mapas[file_count][i][y_cas].contenido = token;
@@ -233,14 +272,14 @@ casilla*** loadMaps(){
 
 int main(){
 
-    casilla*** maps;
+    map* maps;
     maps = loadMaps();
 
     for(int k = 0; k<9;k++){
         printf("mapa %d:\n",k);
         for (int i = 0; i<5;i++){
             for (int j = 0; j<5;j++){
-                printf("%s ", maps[k][i][j].contenido);
+                printf("%s ", maps[k].mapa[i][j].contenido);
             }
             printf("\n");
         }
