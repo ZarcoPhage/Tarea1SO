@@ -7,6 +7,7 @@
 //#include "funciones.h"
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 
 typedef struct {
     char* contenido;
@@ -20,6 +21,25 @@ typedef struct {
     struct map* der;
 } map;
 
+typedef struct {
+    int id_accion;
+    int cantidad_x;
+    int direccion;
+} accion;
+
+typedef struct {
+    int posX;
+    int posY;
+    int posZ;
+    int rol;
+} jugador;
+
+
+typedef struct{
+    jugador* jugadores;
+    map* mapas;
+    int tes_recol;
+} juego;
 void concat(char* buffer, int buf_size, char* s1, char* s2){
     int i,j,k;
     //printf("string a concat: %s %s\n", s1,s2);
@@ -31,13 +51,29 @@ void concat(char* buffer, int buf_size, char* s1, char* s2){
     for(i = 0; i<(int)strlen(s2);i++){
         buffer[j] = s2[i];
         //puts(buffer);
-        j++;
+        j++;    
     }
     buffer[j] = '\0';
     //printf("buffer final: %s\n", buffer);
 }
 
-map* loadMaps(int** tps_list){
+void loadMaps(juego* game, int** tps_list){
+    srand (time(NULL));
+    game->jugadores = (jugador*)malloc(4*sizeof(jugador));
+
+    int probRol;
+
+    for (int i = 0; i<3;i++){
+        probRol = rand()%100;
+        if (probRol<50){ // IDROL 1 ES BUSCAR, IDROL 2 ES ESCALERAS
+            game->jugadores[i].rol = 1;
+        } else{
+            game->jugadores[i].rol = 2;
+        }
+    }
+
+    game->tes_recol = 0;
+
     int num_tableros = 9; //numero de tableros a procesar
 
     DIR* directory = opendir("./maps"); //directorio con los tableros
@@ -45,20 +81,20 @@ map* loadMaps(int** tps_list){
     
     //mapa->tablero->lineas->casillas/fichas
 
-    map* mapas;
+    //map* mapas;
     
-    mapas = (map*)malloc(num_tableros*sizeof(map));
+    game->mapas = (map*)malloc(num_tableros*sizeof(map));
     
     for (int i = 0; i<num_tableros; i++){
-        mapas[i].mapa = (casilla**)malloc(5*sizeof(casilla*));
-        mapas[i].norte = NULL;
-        mapas[i].sur = NULL;
-        mapas[i].izq = NULL;
-        mapas[i].der = NULL;
+        game->mapas[i].mapa = (casilla**)malloc(5*sizeof(casilla*));
+        game->mapas[i].norte = NULL;
+        game->mapas[i].sur = NULL;
+        game->mapas[i].izq = NULL;
+        game->mapas[i].der = NULL;
         for (int j = 0; j<5;j++){
-            mapas[i].mapa[j] = (casilla*)malloc(5*sizeof(casilla));
+            game->mapas[i].mapa[j] = (casilla*)malloc(5*sizeof(casilla));
             for (int k = 0; k<5;k++){
-                mapas[i].mapa[j][k].contenido = (char*)malloc(2*sizeof(char));
+                game->mapas[i].mapa[j][k].contenido = (char*)malloc(2*sizeof(char));
                 //mapas[i][j][k].contenido[0] = '0';
                 //mapas[i][j][k].contenido[1] = '0';
             }
@@ -97,7 +133,7 @@ map* loadMaps(int** tps_list){
             archivo = fopen(path, "r");
             if (archivo == NULL){
                 printf("error abriendo archivo: %s\n", nombre_archivo);
-                return mapas;
+                return;
             }
             
             probT = rand()%100;
@@ -114,14 +150,12 @@ map* loadMaps(int** tps_list){
 
                 token = strtok(linea, delimit);
 
-                srand (time(NULL));
-
                 while (token != NULL){
 
                     prob1 = rand() % 100; //probabilidad casillas especiales
                     prob2 = rand() % 100; //prob tesoro
                     probEsp = rand() %100;
-                    printf("probs: %d %d %d",prob1, prob2, probEsp);
+                    //printf("probs: %d %d %d",prob1, prob2, probEsp);
 
                     if (strncmp(token,"0",2) == 0 ){
                         if ((probEsp < 25)&&(especial == 0) && (file_count != 0) ){
@@ -163,7 +197,7 @@ map* loadMaps(int** tps_list){
                             tesoro_count--;
                         }
 
-                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);    
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);    
                     }
                     if (strncmp(token,"0\r",2)==0){
                         token = "0";
@@ -206,17 +240,51 @@ map* loadMaps(int** tps_list){
                             tesoro = 1;
                             tesoro_count--;
                         }
-                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);   
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);   
                     }
                     if (strncmp(token,"B\r",2)==0){
                         token = "B";
-                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     if (strncmp(token,"/\r",2)==0){
                         token = "/";
-                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);   
-                    }else{
-                        strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);   
+                    }
+
+                    if (strncmp(token,"J1",2) == 0){
+                        printf("jug1 encontrado en: %d %d %d",y_cas,i,file_count);
+                        game->jugadores[0].posX = y_cas;
+                        game->jugadores[0].posY = i;
+                        game->jugadores[0].posZ = file_count;
+                        printf("pos jug: %d %d %d \n",game->jugadores[0].posX,game->jugadores[0].posY,game->jugadores[0].posZ);
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
+                    }
+                    if (strncmp(token,"J2",2) == 0){
+                        printf("jug2 encontrado en: %d %d %d",y_cas,i,file_count);
+                        game->jugadores[1].posX = y_cas;
+                        game->jugadores[1].posY = i;
+                        game->jugadores[1].posZ = file_count;
+                        printf("pos jug: %d %d %d \n",game->jugadores[1].posX,game->jugadores[1].posY,game->jugadores[1].posZ);
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
+                    }
+                    if (strncmp(token,"J3",2) == 0){
+                        printf("jug3 encontrado en: %d %d %d",y_cas,i,file_count);
+                        game->jugadores[2].posX = y_cas;
+                        game->jugadores[2].posY = i;
+                        game->jugadores[2].posZ = file_count;
+                        printf("pos jug: %d %d %d \n",game->jugadores[2].posX,game->jugadores[2].posY,game->jugadores[2].posZ);
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
+                    }
+                    if (strncmp(token,"J4",2) == 0){
+                        printf("jug4 encontrado en: %d %d %d",y_cas,i,file_count);
+                        game->jugadores[3].posX = y_cas;
+                        game->jugadores[3].posY = i;
+                        game->jugadores[3].posZ = file_count;
+                        printf("pos jug: %d %d %d \n",game->jugadores[3].posX,game->jugadores[3].posY,game->jugadores[3].posZ);
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
+                    }
+                    else{
+                        strncpy(game->mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     
                     //mapas[file_count][i][y_cas].contenido = token;
@@ -250,14 +318,14 @@ map* loadMaps(int** tps_list){
 
     closedir(directory);
 
-    return mapas;
+    return;
 }
 
-
 int main(){
+    juego game;
 
     // MAP GENERATION SEGMENT
-    map* maps;
+    //map* maps;
     int** tps;
 
     tps = (int**)malloc(8*sizeof(int*));
@@ -265,7 +333,7 @@ int main(){
         tps[i] = (int*)malloc(3*sizeof(int));
     }
 
-    maps = loadMaps(tps);
+    loadMaps(&game,tps);
 
     for (int i = 0;i < 8;i++){
         printf("%d %d %d\n", tps[i][0], tps[i][1], tps[i][2]);
@@ -275,31 +343,72 @@ int main(){
         printf("mapa %d:\n",k);
         for (int i = 0; i<5;i++){
             for (int j = 0; j<5;j++){
-                printf("%s ", maps[k].mapa[i][j].contenido);
+                printf("%s ", game.mapas[k].mapa[i][j].contenido);
             }
             printf("\n");
         }
     }
 
+    int rounds = 15;
+
     //PROCESS GENERATION
     int inMapa[2];
     int outMapa[2];
-    int j2[2];
-    int j3[2];
-    int j4[2];
-    pid_t map_ppid;
-    pid_t j1,j2,j3,j4;
-
-    j1 = fork();
-
-    if (j1 != 0){
-
-        map_ppid = ppid();
-        j2 = fork();
-
+    int pj2[2];
+    int pj3[2];
+    int pj4[2];
+    
+    if(pipe(inMapa) == -1 || pipe(outMapa) == -1 || pipe(pj2) == -1 || pipe(pj3) == -1 || pipe(pj4) == -1){
+        printf("Error creating pipes ph \n");
+        return -1;
     }
 
-    free(maps);
+    pid_t map_ppid;
+    pid_t pidj1,pidj2,pidj3,pidj4;
 
+    map_ppid = getpid();
+    //printf("map %d",map_ppid);
+
+    for (int i = 0; i<rounds; i++){
+        pidj1 = fork();
+        if (pidj1==0){
+            printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
+            exit(0);
+            
+        }else{
+            wait();
+        }
+        pidj2 = fork();
+        if (pidj2==0){
+            printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
+            exit(0);
+            
+        }else{
+            wait();
+        }
+        pidj3 = fork();
+        if (pidj3==0){
+            printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
+            exit(0);
+            
+        }else{
+            wait();
+        }
+        pidj4 = fork();
+        if (pidj4==0){
+            printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
+            exit(0);
+        }else{
+            wait();
+        }
+    }
+
+    
+
+
+
+
+    printf("%d -> %d\n", getppid(),getpid());
+    
     return 0;
 }
