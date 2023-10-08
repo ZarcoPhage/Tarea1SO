@@ -9,7 +9,12 @@
 #include <time.h>
 #include <unistd.h>
 
-
+map* maps;
+    int** tps;
+    typedef struct {
+        int* posis[9][3];
+        int count;
+} tps_descubiertos;
 
 typedef struct {
     char* contenido;
@@ -222,10 +227,9 @@ map* loadMaps(int** tps_list){
                         strncpy(mapas[file_count].mapa[i][y_cas].contenido,token,2);
                     }
                     
-                    //mapas[file_count][i][y_cas].contenido = token;
+
                     y_cas++;
-                    //mapas[file_count][i][y_cas].contenido[1] = token[1];
-                    //printf("%s\n",token);
+
                     token = strtok(NULL, delimit);
                 }
                 y_cas = 0;
@@ -239,17 +243,6 @@ map* loadMaps(int** tps_list){
         }
     }
 
-/*
-    for(int k = 0; k<num_tableros;k++){
-        printf("mapa %d:\n",k);
-        for (int i = 0; i<5;i++){
-            for (int j = 0; j<5;j++){
-                printf("%s ", mapas[k][i][j].contenido);
-            }
-            printf("\n");
-        }
-    }
-*/
 
     closedir(directory);
 
@@ -263,42 +256,14 @@ void copy(int* a, int* b){
     return;
 }
 
-map* insert(map* line, int* t, char c){
+map* insert(map* line, int* t, char* c){
     int x = t[1];
     int y = t[2];
     int z = t[3];
-    strcpy(line[z].mapa[y][x].contenido, "E" );
-    /*casilla** buffer = (casilla**)malloc(sizeof(casilla*)*5);
-    for (int i = 0; i < 5; i++){
-        buffer[i]= (casilla*)malloc(sizeof(casilla)*5);
-        if (i == y){ 
-            for (int j = 0; j < 6; j++ ) {
-                buffer[i][j].contenido=(char*)malloc(sizeof(char)*2);
 
-                if (j == x){ 
-                    strcpy(buffer[i][j].contenido,st);
-                    }
-                else strcpy(buffer[i][j].contenido, line[z].mapa[i][j].contenido);
-            }
-        }
-        else {
-            for (int j = 0; j < 6 ; j++){
-                buffer[i][j].contenido=(char*)malloc(sizeof(char)*2);
-                strcpy(buffer[i][j].contenido, line[z].mapa[i][j].contenido);
-            }
-        };
-    }
-
-    for (int i = 0; i<5; i++){
-        for (int j = 0 ; j<5 ; j++){
-            strcpy(line[t[3]].mapa[i][j].contenido , buffer[i][j].contenido);
-
-        }
-        
-    }*/
-
-
+    strcpy(line[z].mapa[y][x].contenido, c );
     printf("flag de contenido cambiado = %s \n ", line[z].mapa[y][x].contenido);
+
     return line;
 
 }
@@ -331,14 +296,20 @@ int check(map* m, int* t){
     if(t[1]>=5 || t[1] < 0 || t[2] < 0 || t[2] >= 5){
         return 1;
     }
-    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "/"))){
+    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "/")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "E")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "B")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J1")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J2")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J3")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J4"))){
         printf("Chocaste %s \n", m[t[3]].mapa[t[2]][t[1]].contenido);
         return 1;
     }
     return 0;
 }
 
-void check_sp(map* m, int* t, int* turn){
+void tp(map* m, tps_descubiertos tps, int* t){
+    print("TP");
+    return;
+
+}
+
+void check_sp(map* m, int* t, int* turn, tps_descubiertos tps){
     if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "Bt"))){
         *turn= *turn +5;
         printf("+ 5 turnos\nTienes %d turnos maximos\n", *turn);
@@ -347,6 +318,10 @@ void check_sp(map* m, int* t, int* turn){
     if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "Bn"))){
         *turn = *turn -3;
         printf("- 3 turnos\nTienes %d turnos maximos\n", *turn);
+        return ;
+    }
+    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "TP"))){
+        tp(m, tps, t);
         return ;
     }
     return ;
@@ -360,7 +335,13 @@ int* changeDirection(int* t, int d){
 
 }
 
-int* move_in_map(map* m, int* t, int d, int* max_turn){
+void visual(map* line, int* t, int* save, char* c){
+    insert(line, t, c);
+    insert(line, save, "0");
+
+}
+
+int* move_in_map(map* m, int* t, int d, int* max_turn, char* jugador, tps_descubiertos tps){
     int save[4];
     copy(t, save);
 
@@ -368,14 +349,15 @@ int* move_in_map(map* m, int* t, int d, int* max_turn){
     if (t[0]> 3 || t[0]<0) return t;
     for (int i = 0; i<d; i++){
         move(t);
-        if (check(m,t)){
+        if (check(m,t) || d == 0){
             copy(save, t);
             t[0] = 4;
             return t;
         }
-        check_sp(m, t , max_turn);
+        check_sp(m, t , max_turn, tps);
         
     }
+    visual(m, t, save, jugador);
 
     
 
@@ -384,21 +366,63 @@ int* move_in_map(map* m, int* t, int d, int* max_turn){
 }
 
 map* explore(map* m, int* t){
-
-    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "B"))){
-        insert(m, t, 'E');
+    int buffer[4];
+    copy(t, buffer);
+    move(buffer);
+    if (!(strcmp(m[t[3]].mapa[buffer[2]][buffer[1]].contenido,  "B"))){
+        insert(m, buffer, "C");
         return m;
     }
     printf("No puedes explorar aqui\n");
     return m;
 }
 
+map* open(map* m, int* t){
+    int buffer[4];
+    copy(t, buffer);
+    move(buffer);
+    if (!(strcmp(m[t[3]].mapa[buffer[2]][buffer[1]].contenido,  "E"))){
+        insert(m, buffer, "C");
+        return m;
+    }
+    printf("No puedes abrir aqui\n");
+    return m;
+}
+
+
+
+
+
+
+
+
+
 
 int main(){
 
     // MAP GENERATION SEGMENT
-    map* maps;
-    int** tps;
+
+
+
+    int num;
+    char choose;
+    int j1[4];
+    int max_turn = 8;
+    tps_descubiertos tps_des;
+    for (int i = 0; i<9 ; i++){
+        for (int j = 0; j<3; j++){
+            tps_des.posis[i][j] = NULL;
+        }
+    }
+    tps_des.count = 0;
+
+
+    j1[0] = 0;
+    j1[1] = 1;
+    j1[2] = 1;
+    j1[3] = 4;
+
+
 
     tps = (int**)malloc(8*sizeof(int*));
     for (int i = 0; i < 8;i++){
@@ -406,6 +430,8 @@ int main(){
     }
 
     maps = loadMaps(tps);
+
+
 
     for (int i = 0;i < 8;i++){
         printf("%d %d %d\n", tps[i][0], tps[i][1], tps[i][2]);
@@ -420,41 +446,6 @@ int main(){
             printf("\n");
         }
     }
-    /*
-
-    //PROCESS GENERATION
-    int inMapa[2];
-    int outMapa[2];
-    int pj2[2];
-    int pj3[2];
-    int pj4[2];
-    pid_t map_ppid;
-    pid_t j1,j2,j3,j4;
-
-    j1 = fork();
-
-    if (j1 != 0){
-        printf("1) %d -> %d\n", getppid(), getpid());
-        map_ppid = getppid();
-        j2 = fork();
-
-        if (j2 != 0){
-            printf("2) %d -> %d\n", getppid(), getpid());
-        }
-    }
-
-    printf("%d -> %d\n", getppid(),getpid());
-    */
-    int num;
-    char choose;
-    int j1[4];
-    int max_turn = 8;
-
-
-    j1[0] = 0;
-    j1[1] = 1;
-    j1[2] = 1;
-    j1[3] = 4;
 
     for (int i = 0; i < max_turn; i++){
 
@@ -470,15 +461,29 @@ int main(){
             changeDirection(j1, num);
             printf("Enter movement: \n");
             scanf("%d", &num);
-            move_in_map(maps, j1, num, &max_turn);
+            move_in_map(maps, j1, num, &max_turn, "J1", tps_des);
             if (j1[0]< 0 || j1[0] > 3 ){
                 i--;
                 printf("you need to re do the turn.\n");
         }
+        for(int i = 0; i < 5; i++){
+            for(int j = 0;  j < 5 ; j++){
+            printf("%s ", maps[j1[3]].mapa[i][j].contenido);
+            }
+        printf("\n");
+        }
     }
 
-        else {
+        else if (choose == 'E') {
             explore(maps, j1);
+        }
+        else if (choose == 'O') {
+            open(maps, j1);
+        }
+
+        else {
+            printf(" re do your turn \n");
+            i--;
         }
 
 
