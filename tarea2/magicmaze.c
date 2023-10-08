@@ -37,7 +37,7 @@ void concat(char* buffer, int buf_size, char* s1, char* s2){
     //printf("buffer final: %s\n", buffer);
 }
 
-map* loadMaps(){
+map* loadMaps(int** tps_list){
     int num_tableros = 9; //numero de tableros a procesar
 
     DIR* directory = opendir("./maps"); //directorio con los tableros
@@ -65,18 +65,6 @@ map* loadMaps(){
         }
     }
 
-    /*
-
-    for(int k = 0; k<num_tableros;k++){
-        printf("mapa %d:\n",k);
-        for (int i = 0; i<5;i++){
-            for (int j = 0; j<5;j++){
-                printf("%s ", mapas[k][i][j].contenido);
-            }
-            printf("\n");
-        }
-    }*/
-
     if (directory == NULL){
         puts("Error al abrir el directorio");
         //return 1;
@@ -93,6 +81,7 @@ map* loadMaps(){
     int tesoro_count = 4;
     int probT, probEsp;
 
+    int tps_index = 0;
     while ((entrada=readdir(directory)) && (file_count < 9) ){
         if ( strstr(entrada->d_name, ".txt") != NULL){
             char* nombre_archivo = entrada->d_name; //guardar nombre de archivos
@@ -125,30 +114,17 @@ map* loadMaps(){
 
                 token = strtok(linea, delimit);
 
+                srand (time(NULL));
+
                 while (token != NULL){
-                    //printf("%d %d %d\n",file_count,i,y_cas);
-                    /*
-                    printf("token: %s\n",token);
-                    for (int i = 0;i<2;i++){
-                        switch (token[i]){
-                            case '\n':
-                                printf("\\n");
-                                break;
-                            case '\r':
-                                printf("\\r");
-                                break;
-                            case '\t':
-                                printf("\\t");
-                                break;
-                        }
-                    }*/
 
                     prob1 = rand() % 100; //probabilidad casillas especiales
                     prob2 = rand() % 100; //prob tesoro
                     probEsp = rand() %100;
-                
+                    printf("probs: %d %d %d",prob1, prob2, probEsp);
+
                     if (strncmp(token,"0",2) == 0 ){
-                        if ((probEsp < 15)&&(especial == 0) && (file_count != 0) ){
+                        if ((probEsp < 25)&&(especial == 0) && (file_count != 0) ){
                             if (prob1 < 25){
                                 token = "Bc";
                             }
@@ -160,6 +136,10 @@ map* loadMaps(){
                             }
                             if (prob1 > 75){
                                 token = "TP";
+                                tps_list[tps_index][0] = file_count;
+                                tps_list[tps_index][1] = i;
+                                tps_list[tps_index][2] = y_cas;
+                                tps_index++;
                             }
 
                             especial = 1;
@@ -187,7 +167,7 @@ map* loadMaps(){
                     }
                     if (strncmp(token,"0\r",2)==0){
                         token = "0";
-                        if ((probEsp < 15)&&(especial == 0) && (file_count != 0) ){
+                        if ((probEsp < 25)&&(especial == 0) && (file_count != 0) ){
                             if (prob1 < 25){
                                 token = "Bc";
                             }
@@ -199,6 +179,10 @@ map* loadMaps(){
                             }
                             if (prob1 > 75){
                                 token = "TP";
+                                tps_list[tps_index][0] = file_count;
+                                tps_list[tps_index][1] = i;
+                                tps_list[tps_index][2] = y_cas;
+                                tps_index++;
                             }
 
                             especial = 1;
@@ -272,8 +256,20 @@ map* loadMaps(){
 
 int main(){
 
+    // MAP GENERATION SEGMENT
     map* maps;
-    maps = loadMaps();
+    int** tps;
+
+    tps = (int**)malloc(8*sizeof(int*));
+    for (int i = 0; i < 8;i++){
+        tps[i] = (int*)malloc(3*sizeof(int));
+    }
+
+    maps = loadMaps(tps);
+
+    for (int i = 0;i < 8;i++){
+        printf("%d %d %d\n", tps[i][0], tps[i][1], tps[i][2]);
+    }
 
     for(int k = 0; k<9;k++){
         printf("mapa %d:\n",k);
@@ -283,6 +279,24 @@ int main(){
             }
             printf("\n");
         }
+    }
+
+    //PROCESS GENERATION
+    int inMapa[2];
+    int outMapa[2];
+    int j2[2];
+    int j3[2];
+    int j4[2];
+    pid_t map_ppid;
+    pid_t j1,j2,j3,j4;
+
+    j1 = fork();
+
+    if (j1 != 0){
+
+        map_ppid = ppid();
+        j2 = fork();
+
     }
 
     free(maps);
