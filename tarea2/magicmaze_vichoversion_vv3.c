@@ -316,34 +316,50 @@ void tp(map* m, tps_descubiertos* tps, int* t){
         tps->posis[0][0] = buffer.posis[0][0];
         tps->posis[0][1] = buffer.posis[0][1];
         tps->posis[0][2] = buffer.posis[0][2];
-        printf("TP descubierto en -> x: %d, y:%d, mapa: %d\n ", tps->posis[0][0],tps->posis[0][1],tps->posis[0][2]);
+        
         return;
     }
+    else if (tps->count == 1 && (tps->posis[0][0] == buffer.posis[0][0]) && (tps->posis[0][1] == buffer.posis[0][1]) && (tps->posis[0][2] == buffer.posis[0][2] ))
+    {
+        return;
+    }
+    
     else{
-        printf("TP descubierto en -> x: %d, y:%d, mapa: %d\n ", buffer.posis[0][0], buffer.posis[0][1], buffer.posis[0][2]);
+        int flags = 0;
         for(int i = 0; i<tps->count; i++){
-            if(tps->posis[i][0] == buffer.posis[0][0] && tps->posis[i][1] == buffer.posis[0][1] && tps->posis[i][2] == buffer.posis[0][2] ){
+            printf("antes de la flag %d, %d, %d\n",buffer.posis[0][0], buffer.posis[0][1], buffer.posis[0][2]);
+            printf("antes de la flag %d, %d, %d\n",tps->posis[i][0], tps->posis[i][1], tps->posis[i][2]);
+            if((tps->posis[i][0] == buffer.posis[0][0]) && (tps->posis[i][1] == buffer.posis[0][1]) && (tps->posis[i][2] == buffer.posis[0][2] )){
+                printf("Hello \n");
+                flags = 1;
+            }
+
+            if (flags) {
                 for (int j=0 ; j<3 ; j++){
                     if(i == 0){
-                        i = tps->count-1;
-                        t[j+1] = tps->posis[i][j];
+                        printf("En el if %d\n", i);
+                        t[j+1] = tps->posis[tps->count-1][j];
                     }
+
                     else t[j+1] = tps->posis[i-1][j];
                 }
-                printf("mine 3 %d %d %d\n", t[1], t[2],t[3]);
-                return;
+                printf("Tp viejo \n");
+                return ;
             }
-            else {
-                printf("mine 4\n");
+            else if (i==tps->count-1)
+             {
+                printf("mine 4, nuevo Tp\n");
                 
                 tps->posis[tps->count][0] = buffer.posis[0][0];
                 tps->posis[tps->count][1] = buffer.posis[0][1];
                 tps->posis[tps->count][2] = buffer.posis[0][2];
                 tps->count = tps->count + 1;
                 printf("%d\n", tps->count);
-                return;
+                return ;
+                i = tps->count;
             }
         }
+
         return;
     }
  
@@ -363,6 +379,9 @@ void check_sp(map* m, int* t, int* turn, tps_descubiertos* tps){
     }
     if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "TP"))){
         tp(m, tps, t);
+        for (int i = 0; i< tps->count; i++){
+            printf("tp :%d -> %d %d %d\n", i, tps->posis[i][0],tps->posis[i][1],tps->posis[i][2]);
+        }
         return ;
     }
     return ;
@@ -380,6 +399,7 @@ void visual(map* line, int* t, int* save, char* c, tps_descubiertos* tps){
 
     insert(line, save, "0");
     for (int i = 0; i<tps->count ; i++){
+        if(strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J1") || strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J2") || strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J3") || strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J4"))
         strcpy(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"TP");
     }
     insert(line, t, c);
