@@ -10,6 +10,11 @@
 #include <unistd.h>
 
 typedef struct {
+    int posis[9][3];
+    int count;
+} tps_descubiertos;
+
+typedef struct {
     char* contenido;
 } casilla;
 
@@ -22,9 +27,9 @@ typedef struct {
 } map;
 
 typedef struct {
-    int id_accion;
-    int cantidad_x;
-    int direccion;
+    int id_accion; //1 para buscar, 2 para explorar, 3 para mover
+    int cantidad_x; //0 si hace accion
+    int direccion; 
 } accion;
 
 typedef struct {
@@ -40,6 +45,7 @@ typedef struct{
     map* mapas;
     int tes_recol;
 } juego;
+
 void concat(char* buffer, int buf_size, char* s1, char* s2){
     int i,j,k;
     //printf("string a concat: %s %s\n", s1,s2);
@@ -321,6 +327,212 @@ void loadMaps(juego* game, int** tps_list){
     return;
 }
 
+void copy(int* a, int* b){
+    for (int i = 0; i<4 ; i++){
+        b[i] = a[i];
+    }
+    return;
+}
+
+map* insert(map* line, int* t, char* c){
+    int x = t[1];
+    int y = t[2];
+    int z = t[3];
+
+    strcpy(line[z].mapa[y][x].contenido, c );
+    printf("flag de contenido cambiado = %s \n ", line[z].mapa[y][x].contenido);
+
+    return line;
+
+}
+
+
+int* move(int* a){
+    switch (a[0])
+    {
+    case 0:
+        a[1]= a[1]+1;
+        break;
+    
+    case 1:
+        a[2]= a[2]+1;
+        break;
+    
+    case 2:
+        a[1]= a[1]-1;
+        break;
+    
+    default:
+        a[2]= a[2]-1;
+        break;
+    }
+
+    return a;
+}
+
+int check(map* m, int* t){
+    if(t[1]>=5 || t[1] < 0 || t[2] < 0 || t[2] >= 5){
+        return 1;
+    }
+    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "/")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "E")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "B")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J1")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J2")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J3")) || !(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "J4"))){
+        printf("Chocaste %s \n", m[t[3]].mapa[t[2]][t[1]].contenido);
+        return 1;
+    }
+    return 0;
+}
+//tp cambiada
+void tp(map* m, tps_descubiertos* tps, int* t){
+    tps_descubiertos buffer;
+    printf("Mine 1\n");
+    for (int i =0; i<3; i++){
+        buffer.posis[0][i] = t[i+1];
+        printf("buffer %d", t[i+1]);
+    }
+
+    if (tps->count == 0){
+        printf("Mine 2\n");
+        tps->count = 1;
+        tps->posis[0][0] = buffer.posis[0][0];
+        tps->posis[0][1] = buffer.posis[0][1];
+        tps->posis[0][2] = buffer.posis[0][2];
+        
+        return;
+    }
+    else if (tps->count == 1 && (tps->posis[0][0] == buffer.posis[0][0]) && (tps->posis[0][1] == buffer.posis[0][1]) && (tps->posis[0][2] == buffer.posis[0][2] ))
+    {
+        return;
+    }
+    
+    else{
+        int flags = 0;
+        for(int i = 0; i<tps->count; i++){
+            printf("antes de la flag %d, %d, %d\n",buffer.posis[0][0], buffer.posis[0][1], buffer.posis[0][2]);
+            printf("antes de la flag %d, %d, %d\n",tps->posis[i][0], tps->posis[i][1], tps->posis[i][2]);
+            if((tps->posis[i][0] == buffer.posis[0][0]) && (tps->posis[i][1] == buffer.posis[0][1]) && (tps->posis[i][2] == buffer.posis[0][2] )){
+                printf("Hello \n");
+                flags = 1;
+            }
+
+            if (flags) {
+                for (int j=0 ; j<3 ; j++){
+                    if(i == 0){
+                        printf("En el if %d\n", i);
+                        t[j+1] = tps->posis[tps->count-1][j];
+                    }
+
+                    else t[j+1] = tps->posis[i-1][j];
+                }
+                printf("Tp viejo \n");
+                return ;
+            }
+            else if (i==tps->count-1)
+             {
+                printf("mine 4, nuevo Tp\n");
+                
+                tps->posis[tps->count][0] = buffer.posis[0][0];
+                tps->posis[tps->count][1] = buffer.posis[0][1];
+                tps->posis[tps->count][2] = buffer.posis[0][2];
+                tps->count = tps->count + 1;
+                printf("%d\n", tps->count);
+                return ;
+                i = tps->count;
+            }
+        }
+
+        return;
+    }
+ 
+
+}
+//Check_sp Cambiada
+void check_sp(map* m, int* t, int* turn, tps_descubiertos* tps){
+    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "Bt"))){
+        *turn= *turn +5;
+        printf("+ 5 turnos\nTienes %d turnos maximos\n", *turn);
+        return ;
+    }
+    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "Bn"))){
+        *turn = *turn -3;
+        printf("- 3 turnos\nTienes %d turnos maximos\n", *turn);
+        return ;
+    }
+    if (!(strcmp(m[t[3]].mapa[t[2]][t[1]].contenido,  "TP"))){
+        tp(m, tps, t);
+        for (int i = 0; i< tps->count; i++){
+            printf("tp :%d -> %d %d %d\n", i, tps->posis[i][0],tps->posis[i][1],tps->posis[i][2]);
+        }
+        return ;
+    }
+    return ;
+}
+
+
+
+int* changeDirection(int* t, int d){
+    t[0] = d;
+    return t; 
+
+}
+//visual Cambiada
+void visual(map* line, int* t, int* save, char* c, tps_descubiertos* tps){
+
+    insert(line, save, "0");
+    for (int i = 0; i<tps->count ; i++){
+        if(strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J1") || strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J2") || strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J3") || strcmp(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"J4"))
+        strcpy(line[tps->posis[i][2]].mapa[tps->posis[i][1]][tps->posis[i][0]].contenido,"TP");
+    }
+    insert(line, t, c);
+
+}
+
+int* move_in_map(map* m, int* t, int d, int* max_turn, char* jugador, tps_descubiertos* tps){
+    int save[4];
+    copy(t, save);
+
+
+    if (t[0]> 3 || t[0]<0) return t;
+    for (int i = 0; i<d; i++){
+        move(t);
+        if (check(m,t) || d == 0){
+            copy(save, t);
+            t[0] = 4;
+            return t;
+        }
+        check_sp(m, t , max_turn, tps);
+        printf("mine 5 %d %d %d\n", t[1], t[2],t[3]);
+
+        
+    }
+    visual(m, t, save, jugador, tps);    
+
+    return t;
+
+}
+
+map* explore(map* m, int* t){
+    int buffer[4];
+    copy(t, buffer);
+    move(buffer);
+    if (!(strcmp(m[t[3]].mapa[buffer[2]][buffer[1]].contenido,  "B"))){
+        insert(m, buffer, "C");
+        return m;
+    }
+    printf("No puedes explorar aqui\n");
+    return m;
+}
+
+map* open(map* m, int* t){
+    int buffer[4];
+    copy(t, buffer);
+    move(buffer);
+    if (!(strcmp(m[t[3]].mapa[buffer[2]][buffer[1]].contenido,  "E"))){
+        insert(m, buffer, "C");
+        return m;
+    }
+    printf("No puedes abrir aqui\n");
+    return m;
+}
+
 int main(){
     juego game;
 
@@ -338,6 +550,13 @@ int main(){
 
     loadMaps(&game,tps);
 
+    tps_descubiertos tps_des;
+    for (int i = 0; i<9 ; i++){
+        for (int j = 0; j<3; j++){
+            tps_des.posis[i][j] = -1;
+        }
+    }
+    tps_des.count = 0;
 
     /*
     for (int i = 0;i < 8;i++){
@@ -357,41 +576,92 @@ int main(){
     int rounds = 15;
 
     //PROCESS GENERATION
-    int inMapa[2];
-    int outMapa[2];
+    int inMap[2];
+    int outMap[2];
+    int pj1[2]; // escritura de hijos a padre
     int pj2[2];
     int pj3[2];
     int pj4[2];
     
-    if(pipe(inMapa) == -1 || pipe(outMapa) == -1 || pipe(pj2) == -1 || pipe(pj3) == -1 || pipe(pj4) == -1){
+    if(pipe(inMap) == -1 || pipe(outMap) == -1 || pipe(pj1) == -1 || pipe(pj2) == -1 || pipe(pj3) == -1 || pipe(pj4) == -1){
         printf("Error creating pipes ph \n");
         return -1;
     }
 
     pid_t map_ppid;
     pid_t pidj1,pidj2,pidj3,pidj4;
-    int num_act;
-
+    int num_act, id_dir, cant_desp = 0;
+    accion act;
     map_ppid = getpid();
+    jugador auxJ;
+    jugador* rollback;
+
+    rollback = (jugador*)malloc(4*sizeof(jugador));
     //printf("map %d",map_ppid);
 
     puts("Bienvenido a magic maze!");
 
     printf("%d %d %d %d\n", game.jugadores[0].rol,game.jugadores[1].rol,game.jugadores[2].rol,game.jugadores[3].rol);
 
-
     for (int i = 0; i<rounds; i++){
         printf("RONDA %d\n",i+1);
-
+        for (int z = 0; z<4; <++){
+            rollback.jugadores[z].posX = game.jugadores[k].posX;
+            rollback.jugadores[z].posY = game.jugadores[k].posY;
+            rollback.jugadores[z].posZ = game.jugadores[k].posZ;
+        }
+        
+        for (int k = 0; k<4;k++){
+            auxJ.posX = game.jugadores[k].posX;
+            auxJ.posY = game.jugadores[k].posY;
+            auxJ.posZ = game.jugadores[k].posZ;
+            auxJ.rol = 0;
+                //close(outMap[0]);
+            write(outMap[1],&auxJ,sizeof(jugador));
+                //close(outMap[1]);
+        }
+        
         pidj1 = fork();
         if (pidj1==0){
             if (game.jugadores[0].rol == 1){ //rol buscar
-                printf("TURNO J1\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J1, posicion: mapa %d x:%d y:%d\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+
+                close(pj1[0]);
+                write(pj1[1],&act,sizeof(accion));
+                close(pj1[0]);
+                
             }
             if (game.jugadores[0].rol == 2){ //rol explore
-                printf("TURNO J1\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J1, posicion actual: mapa %d x:%d y:%d\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj1[0]);
+                write(pj1[1],&act,sizeof(accion));
+                close(pj1[0]);
             }
 
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
@@ -399,60 +669,160 @@ int main(){
             
         }else{
             wait();
+            close(pj1[1]);
+            read(pj1[0],&act,sizeof(accion));
+            printf("received: %d %d %d\n",act.id_accion, act.cantidad_x, act.direccion);
         }
         pidj2 = fork();
         if (pidj2==0){
             if (game.jugadores[1].rol == 1){ //rol buscar
-                printf("TURNO J2\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J2, posicion: mapa %d x:%d y:%d\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj2[0]);
+                write(pj2[1],&act,sizeof(accion));
+                close(pj2[1]);
             }
             if (game.jugadores[1].rol == 2){ //rol explore
-                printf("TURNO J2\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J2, posicion: mapa %d x:%d y:%d\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj2[0]);
+                write(pj2[1],&act,sizeof(accion));
+                close(pj2[1]);
             }
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
             
         }else{
             wait();
+            close(pj2[1]);
+            read(pj2[0],&act,sizeof(accion));
+            close(pj2[0]);
+            printf("received: %d %d %d\n",act.id_accion, act.cantidad_x, act.direccion);
         }
         pidj3 = fork();
         if (pidj3==0){
             if (game.jugadores[2].rol == 1){ //rol buscar
-                printf("TURNO J3\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J3, posicion: mapa %d x:%d y:%d\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj3[0]);
+                write(pj3[1],&act,sizeof(accion));
+                close(pj3[1]);
             }
             if (game.jugadores[2].rol == 2){ //rol explore
-                printf("TURNO J3\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J3, posicion: mapa %d x:%d y:%d\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj3[0]);
+                write(pj3[1],&act,sizeof(accion));
+                close(pj3[1]);
             }
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
             
         }else{
             wait();
+            close(pj3[1]);
+            read(pj3[0],&act,sizeof(accion));
+            close(pj3[0]);
+            printf("received: %d %d %d\n",act.id_accion, act.cantidad_x, act.direccion);
         }
         pidj4 = fork();
         if (pidj4==0){
             if (game.jugadores[3].rol == 1){ //rol buscar
-                printf("TURNO J4\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J4, posicion: mapa %d x:%d y:%d\n acciones:\n 1) buscar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj4[0]);
+                write(pj4[1],&act,sizeof(accion));
+                close(pj4[1]);
             }
             if (game.jugadores[3].rol == 2){ //rol explore
-                printf("TURNO J4\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ");
+                read(outMap[0],&auxJ,sizeof(jugador));
+                printf("TURNO J4, posicion: mapa %d x:%d y:%d\n acciones:\n 1) Explorar 2) moverse\n INGRESA TU ACCION: ",auxJ.posZ,auxJ.posX,auxJ.posY);
                 scanf("%d", &num_act);
+                printf("Puedes realizar esta accion en alguna direccion\n 1) arriba \n 2) abajo \n 3) izquierda \n 4) derecha \n INGRESA TU DIRECCIÓN: ");
+                scanf("%d", &id_dir);
+                if (num_act == 1){
+                    cant_desp = 0;
+                }else{
+                    printf("cuantas casillas deseas moverte?\n INGRESE NUMERO: ");
+                    scanf("%d",&cant_desp);
+                }
+                act.id_accion = num_act;
+                act.cantidad_x = cant_desp;
+                act.direccion = id_dir;
+                close(pj4[0]);
+                write(pj4[1],&act,sizeof(accion));
+                close(pj4[1]);
             }
             printf("[son] pid %d from [parent] pid %d\n",getpid(),getppid());
             exit(0);
         }else{
             wait();
+            close(pj4[1]);
+            read(pj4[0],&act,sizeof(accion));
+            close(pj4[1]);
+            printf("received: %d %d %d\n",act.id_accion, act.cantidad_x, act.direccion);
         }
     }
-
-    
-
-
-
 
     printf("%d -> %d\n", getppid(),getpid());
     
