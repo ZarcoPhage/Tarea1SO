@@ -22,16 +22,33 @@ class ForkWordSearch extends RecursiveTask<Integer[]> {
         finalPos[0] = -1;
         finalPos[1] = -1;
 
-        if ((end - start) <= targetWord.length()){
-            int i,k;
+        if ((this.verticalEnd - this.verticalStart) <= targetWord.length()){
+            int i,k, j;
             char[] aux = targetWord.toCharArray();
             int counter = 0;
-
+            boolean flag = false;
             //horizontal search
             for (i = this.verticalStart; i<=this.verticalEnd; i++){
                 for (k = this.verticalStart; k<=this.verticalEnd; k++){
-                    if (matrix[i][k] == aux[counter]){
-                        
+                    if (matrix[i][k] == aux[0]){
+                        for (j = 1; j<targetWord.length();j++){
+                            if (matrix[i+j][k] != aux[j]){
+                                finalPos[0] = -1;
+                                finalPos[1] = -1;
+                                break;
+                            }
+                            finalPos[0] = i;
+                            finalPos[1] = k;
+                        }
+                        for (j=1; j<targetWord.length();j++){
+                            if (matrix[i][k+j] != aux[j]){
+                                finalPos[0] = -1;
+                                finalPos[1] = -1;
+                                break;
+                            }
+                            finalPos[0] = i;
+                            finalPos[1] = k;
+                        }
                     }
                 }
             }

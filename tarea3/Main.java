@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.ForkJoinPool;
 
 public class Main{
     public static void main(String[] args){
@@ -24,8 +25,9 @@ public class Main{
             System.out.println(" ");
         }
 
-
-
+        ForkWordSearch task = new ForkWordSearch(matrix, extractor.getTargetWord(), 0, extractor.getDim()-1, 0, extractor.getDim()-1);
+        ForkJoinPool pool = new ForkJoinPool();
+        Integer[] res = pool.invoke(task);
 
 
     }
