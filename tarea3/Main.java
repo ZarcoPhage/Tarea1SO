@@ -25,11 +25,12 @@ public class Main{
             System.out.println(" ");
         }
 
-        ForkWordSearch task = new ForkWordSearch(matrix, extractor.getTargetWord(), 0, extractor.getDim()-1, 0, extractor.getDim()-1);
+        ForkWordSearch task = new ForkWordSearch(matrix, extractor.getTargetWord(), 0, extractor.getDim()-1, 0, extractor.getDim()-1, extractor.getDim());
         ForkJoinPool pool = new ForkJoinPool();
         Integer[] res = pool.invoke(task);
 
-
+        System.out.println(res[0]);
+        System.out.println(res[1]);
     }
 
 }

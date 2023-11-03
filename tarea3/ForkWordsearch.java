@@ -4,63 +4,49 @@ import java.util.concurrent.RecursiveTask;
 class ForkWordSearch extends RecursiveTask<Integer[]> {
     char[][] matrix;
     String targetWord;
-    int verticalStart, verticalEnd, horizontalStart, horizontalEnd;
+    int dim, verticalStart, verticalEnd, horizontalStart, horizontalEnd;
 
-    ForkWordSearch(char[][] matrix, String targetWord, int verticalStart, int verticalEnd, int horizontalStart, int horizontalEnd){
+    ForkWordSearch(char[][] matrix, String targetWord, int verticalStart, int verticalEnd, int horizontalStart, int horizontalEnd, int dim){
         this.matrix = matrix;
         this.targetWord = targetWord;
         this.verticalStart = verticalStart;
         this.verticalEnd = verticalEnd;
         this.horizontalEnd = horizontalEnd;
         this.horizontalStart = horizontalStart;
+        this.dim = dim;
     }
-
 
     @Override
     protected Integer[] compute(){
+        System.out.println("COMPUTING start:" + this.verticalStart + " " + this.horizontalStart + " end:" + this.verticalEnd + " " + this.horizontalEnd);
         Integer[] finalPos = new Integer[2];
         finalPos[0] = -1;
         finalPos[1] = -1;
 
-        if ((this.verticalEnd - this.verticalStart) <= targetWord.length()){
+        if ((this.verticalEnd - this.verticalStart) <= this.targetWord.length()){
             int i,k, j;
             char[] aux = targetWord.toCharArray();
             int counter = 0;
             boolean flag = false;
-            //horizontal search
-            for (i = this.verticalStart; i<=this.verticalEnd; i++){
-                for (k = this.verticalStart; k<=this.verticalEnd; k++){
+            //VERTICAL search
+            for (i = this.verticalStart; i<this.verticalEnd; i++){
+                for (k = this.horizontalStart; k<this.horizontalEnd; k++){
                     if (matrix[i][k] == aux[0]){
-                        for (j = 1; j<targetWord.length();j++){
-                            if (matrix[i+j][k] != aux[j]){
-                                finalPos[0] = -1;
-                                finalPos[1] = -1;
-                                break;
-                            }
-                            finalPos[0] = i;
-                            finalPos[1] = k;
-                        }
-                        for (j=1; j<targetWord.length();j++){
-                            if (matrix[i][k+j] != aux[j]){
-                                finalPos[0] = -1;
-                                finalPos[1] = -1;
-                                break;
-                            }
-                            finalPos[0] = i;
-                            finalPos[1] = k;
-                        }
+                        System.out.println(i + "," + k + " " + matrix[i][k]);
                     }
                 }
             }
-
+            if (flag){
+                System.out.println("F O U N D");
+            }
 
         } else {
             int middle = (verticalEnd + verticalStart) / 2;  //no importa -> matriz cuadrada
             
-            ForkWordSearch subtaskA = new ForkWordSearch(matrix, this.targetWord, this.verticalStart, middle, this.horizontalStart, middle);
-            ForkWordSearch subtaskB = new ForkWordSearch(matrix, this.targetWord, this.verticalStart, middle, middle, this.horizontalEnd);
-            ForkWordSearch subtaskC = new ForkWordSearch(matrix, this.targetWord, middle, this.verticalEnd, this.horizontalStart, middle);
-            ForkWordSearch subtaskD = new ForkWordSearch(matrix, this.targetWord, middle, this.verticalEnd, middle, this.horizontalEnd);
+            ForkWordSearch subtaskA = new ForkWordSearch(matrix, this.targetWord, this.verticalStart, middle, this.horizontalStart, middle, this.dim);
+            ForkWordSearch subtaskB = new ForkWordSearch(matrix, this.targetWord, this.verticalStart, middle, middle, this.horizontalEnd, this.dim);
+            ForkWordSearch subtaskC = new ForkWordSearch(matrix, this.targetWord, middle, this.verticalEnd, this.horizontalStart, middle, this.dim);
+            ForkWordSearch subtaskD = new ForkWordSearch(matrix, this.targetWord, middle, this.verticalEnd, middle, this.horizontalEnd, this.dim);
 
             subtaskA.fork();
             subtaskB.fork();
