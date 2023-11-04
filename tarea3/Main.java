@@ -41,6 +41,16 @@ public class Main{
         }
 
         System.out.println("TIEMPO FORK: " + forkEnd);
+
+        long threadStart = System.currentTimeMillis();
+        MatrixSize first = new MatrixSize(matrix, extractor.getTargetWord(), extractor.getDim(), extractor.getTargetWord().length(), 0, 0);
+        first.start();
+
+        long threadEnd = System.currentTimeMillis() - threadStart;
+        System.out.println("TIEMPO THREADS: " + threadEnd);
+
+        NormalSearch second = new NormalSearch(matrix, extractor.getTargetWord(), extractor.getTargetWord().length(),extractor.getDim());
+        second.search();
     }
 
 }
