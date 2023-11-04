@@ -25,12 +25,22 @@ public class Main{
             System.out.println(" ");
         }
 
+        long forkStart = System.currentTimeMillis();
+
         ForkWordSearch task = new ForkWordSearch(matrix, extractor.getTargetWord(), 0, 0, extractor.getDim(), extractor.getTargetWord().length(), extractor.getDim());
         ForkJoinPool pool = new ForkJoinPool();
         Integer[] res = pool.invoke(task);
 
-        System.out.println("RESULT I: " + res[0]);
-        System.out.println("RESULT K: " + res[1]);
+        long forkEnd = System.currentTimeMillis() - forkStart;
+
+        if (res[2] == 1){
+            System.out.println("PALABRA ENCONTRADA EN FILA: " + res[0] + " COLUMNA: " + res[1] + " en direccion vertical");
+        }
+        if (res[2] == 2){
+            System.out.println("PALABRA ENCONTRADA EN FILA: " + res[0] + " COLUMNA: " + res[1] + " en direccion horizontal");
+        }
+
+        System.out.println("TIEMPO FORK: " + forkEnd);
     }
 
 }

@@ -18,47 +18,49 @@ class ForkWordSearch extends RecursiveTask<Integer[]> {
 
     @Override
     protected Integer[] compute(){
-        System.out.println(this.targetWord);
-        Integer[] finalPos = new Integer[2];
+        //System.out.println(this.targetWord);
+        Integer[] finalPos = new Integer[3];
         finalPos[0] = -1;
         finalPos[1] = -1;
+        finalPos[2] = 0; //0 dado que no hay dirección donde haya sido encontrada la palabra
 
         if (actualSize <= minSize){
-            System.out.println("stX: " + this.stX + " stY: " + this.stY);
+            //System.out.println("stX: " + this.stX + " stY: " + this.stY);
             int i,k, j, coincid;
             char[] aux = targetWord.toCharArray();
             int counter = 0;
             boolean flag = false;
 
             coincid = 0;
-            System.out.println("vertical search");
+            //System.out.println("vertical search");
             for (i = this.stY; i<(this.stY + actualSize); i++){
                 for (k=this.stX;k<(this.stX + actualSize);k++){
                     if (matrix[i][k] == aux[0]){
                         coincid = 1;
-                        System.out.println(matrix[i][k]);
+                        //System.out.println(matrix[i][k]);
                         for (j=1;j<this.targetWord.length();j++){
                             //System.out.println("start iterate");
                             if ((i+j) < this.dim){
-                                System.out.println(matrix[i+j][k]);
+                                //System.out.println(matrix[i+j][k]);
                                 if (matrix[i+j][k] != aux[j]){
                                     coincid = 0;
-                                    System.out.println("break");
+                                    //System.out.println("break");
                                     break;
                                 }
                                 coincid++;
                             }else{
                                 coincid = 0;
-                                System.out.println("break");
+                                //System.out.println("break");
                                 break;
                             }
                         }
-                        System.out.println("end iterate: " + j + "coincid: " + coincid);
+                        //System.out.println("end iterate: " + j + "coincid: " + coincid);
                         if (coincid == minSize){
-                            System.out.println("found at " + i + " " + k);
+                            //System.out.println("found at " + i + " " + k);
                             flag = true;
                             finalPos[0] = i;
                             finalPos[1] = k;
+                            finalPos[2] = 1; //encontrado en vertical
                             break;
                         }
                     }
@@ -70,33 +72,34 @@ class ForkWordSearch extends RecursiveTask<Integer[]> {
             
 
             if (flag == false){
-                System.out.println("horizontal search");
+                //System.out.println("horizontal search");
                 for (i = this.stY; i<(this.stY + actualSize); i++){
                     for (k=this.stX;k<(this.stX + actualSize);k++){
                         if (matrix[i][k] == aux[0]){
                             coincid = 1;
-                            System.out.println(matrix[i][k]);
+                            //System.out.println(matrix[i][k]);
                             for (j=1;j<this.targetWord.length();j++){
                                 if ((k+j) < this.dim){
-                                    System.out.println(matrix[i][k+j]);
+                                    //System.out.println(matrix[i][k+j]);
                                     if (matrix[i][k+j] != aux[j]){
                                         coincid = 0;
-                                        System.out.println("break");
+                                        //System.out.println("break");
                                         break;
                                     }
                                     coincid++;
                                 }else{
                                     coincid = 0;
-                                    System.out.println("break");
+                                    //System.out.println("break");
                                     break;
                                 }
                             }
-                            System.out.println("end iterate: " + j + "coincid: " + coincid);
+                            //System.out.println("end iterate: " + j + "coincid: " + coincid);
                             if (coincid == minSize){
-                                System.out.println("found at " + i + " " + k);
+                                //System.out.println("found at " + i + " " + k);
                                 flag = true;
                                 finalPos[0] = i;
                                 finalPos[1] = k;
+                                finalPos[2] = 2; //encontrado horizontal
                                 break;
                             }
                         }
@@ -106,7 +109,7 @@ class ForkWordSearch extends RecursiveTask<Integer[]> {
                     }
                 }
             }
-            System.out.println("FINAL I K " + finalPos[0] + " " + finalPos[1]);
+            //System.out.println("FINAL I K " + finalPos[0] + " " + finalPos[1]);
         } else {
             int middle = actualSize / 2;  //no importa -> matriz cuadrada
             
@@ -131,6 +134,7 @@ class ForkWordSearch extends RecursiveTask<Integer[]> {
                 if (results[i][0] != -1){
                     finalPos[0] = results[i][0];
                     finalPos[1] = results[i][1];
+                    finalPos[2] = results[i][2];
                     break;
                 }
             }
