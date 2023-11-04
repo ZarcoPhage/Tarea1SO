@@ -16,10 +16,10 @@ public class Vertical extends Thread{
         short count = 0;
         for (int i = 0 ; i < length ; i++){
             if (matrix[y+i][x] == word.charAt(i) ) count++;
-            else count=0;
+            else break;
         }
         if (count == length){
-            System.err.println("Palabra Vertical encontrada en ("+y+", "+x+").");
+            System.err.println("fila ["+y+", "+ (y+length-1)+ "], columna "+x+".");
         }
     }
 

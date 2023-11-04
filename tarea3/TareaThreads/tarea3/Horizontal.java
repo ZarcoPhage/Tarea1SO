@@ -16,10 +16,10 @@ public class Horizontal extends Thread{
         for (int i = 0 ; i < length ; i++){
             
             if (matrix[y][x+i] == word.charAt(i) ) count++;
-            else count=0;
+            else break;
         }
         if (count == length){
-            System.err.println("Palabra Horizontal encontrada en ("+y+", "+x+").");
+            System.err.println("fila "+y+",  columna ["+x+", "+ (x+length-1)+"].");
         }
     }
 }
