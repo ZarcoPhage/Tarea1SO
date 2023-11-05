@@ -43,9 +43,9 @@ public class Main{
         System.out.println("TIEMPO FORK: " + forkEnd);
 
         long threadStart = System.currentTimeMillis();
-        MatrixSize first = new MatrixSize(matrix, extractor.getTargetWord(), extractor.getDim(), extractor.getTargetWord().length(), 0, 0);
+        matrixsize first = new matrixsize(matrix, extractor.getTargetWord(), extractor.getDim(), extractor.getTargetWord().length(), 0, 0);
         first.start();
-
+        while(first.isAlive());
         long threadEnd = System.currentTimeMillis() - threadStart;
         System.out.println("TIEMPO THREADS: " + threadEnd);
 
