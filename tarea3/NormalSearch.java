@@ -17,7 +17,7 @@ public class NormalSearch {
                 if (matrix[i][j] == word.charAt(count) ) count++;
                 else count = 0;
                 if (count == length ){
-                    System.err.println("Fila "+ i + ", columna "+(j-length+1));
+                    System.err.println("PALABRA ENCONTRADA EN Fila "+ i + ", columna "+(j-length+1));
                     i = dim;
                     break;
                 }
@@ -30,7 +30,7 @@ public class NormalSearch {
                 if (matrix[j][i] == word.charAt(count) ) count++;
                 else count = 0;
                 if (count == length ){
-                    System.err.println("Fila "+ (j-length+1) + ", columna "+i);
+                    System.err.println("PALABRA ENCONTRADA EN Fila "+ (j-length+1) + ", columna "+i);
                     i = dim;
                     break;
                 }

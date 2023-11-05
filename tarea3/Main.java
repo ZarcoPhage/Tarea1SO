@@ -13,17 +13,18 @@ public class Main{
         DataExtractor extractor = new DataExtractor(path);
         extractor.Extract();
 
-        System.out.println(extractor.getDim());
-        System.out.println(extractor.getTargetWord());
+        //System.out.println(extractor.getDim());
+        //System.out.println(extractor.getTargetWord());
         char[][] matrix = extractor.getMatrix();
 
+        /*
         int i,k;
         for (i = 0; i<extractor.getDim(); i++){
             for (k=0; k<extractor.getDim();k++){
                 System.out.print(matrix[i][k]);
             }
             System.out.println(" ");
-        }
+        }*/
 
         long forkStart = System.currentTimeMillis();
 
@@ -33,24 +34,25 @@ public class Main{
 
         long forkEnd = System.currentTimeMillis() - forkStart;
 
-        if (res[2] == 1){
-            System.out.println("PALABRA ENCONTRADA EN FILA: " + res[0] + " COLUMNA: " + res[1] + " en direccion vertical");
-        }
-        if (res[2] == 2){
-            System.out.println("PALABRA ENCONTRADA EN FILA: " + res[0] + " COLUMNA: " + res[1] + " en direccion horizontal");
-        }
+        System.out.println("PALABRA ENCONTRADA EN FILA: " + res[0] + " COLUMNA: " + res[1]);
 
         System.out.println("TIEMPO FORK: " + forkEnd);
 
         long threadStart = System.currentTimeMillis();
-        matrixsize first = new matrixsize(matrix, extractor.getTargetWord(), extractor.getDim(), extractor.getTargetWord().length(), 0, 0);
+        Multithreading first = new Multithreading(matrix, extractor.getTargetWord(), extractor.getDim(), extractor.getTargetWord().length(), 0, 0);
         first.start();
         while(first.isAlive());
         long threadEnd = System.currentTimeMillis() - threadStart;
+
         System.out.println("TIEMPO THREADS: " + threadEnd);
 
+        long normalStart = System.currentTimeMillis();
         NormalSearch second = new NormalSearch(matrix, extractor.getTargetWord(), extractor.getTargetWord().length(),extractor.getDim());
         second.search();
+        long normalEnd = System.currentTimeMillis() - normalStart;
+
+        System.out.println("TIEMPO PROGRAMA SECUENCIAL: " + normalEnd);
+
     }
 
 }

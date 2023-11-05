@@ -1,11 +1,11 @@
-public class matrixsize extends Thread{
+public class Multithreading extends Thread{
     int size;
     int goal;
     int x;
     int y;
     char[][] matrix;
     String Word;
-    public  matrixsize(char[][] matrix, String Word ,int size, int goal, int x, int y){
+    public  Multithreading(char[][] matrix, String Word ,int size, int goal, int x, int y){
         this.size = size;
         this.goal = goal;
         this.x = x;
@@ -17,10 +17,10 @@ public class matrixsize extends Thread{
     public void run() {
         if (size>goal){
             int nn =  size/2;
-            matrixsize sub = new matrixsize(matrix, Word, nn, goal, x, y);
-            matrixsize sub2 = new matrixsize(matrix, Word, nn, goal, x+nn, y);
-            matrixsize sub3 = new matrixsize(matrix, Word, nn, goal, x, y + nn );
-            matrixsize sub4 = new matrixsize(matrix, Word, nn, goal, x+nn , y + nn);
+            Multithreading sub = new Multithreading(matrix, Word, nn, goal, x, y);
+            Multithreading sub2 = new Multithreading(matrix, Word, nn, goal, x+nn, y);
+            Multithreading sub3 = new Multithreading(matrix, Word, nn, goal, x, y + nn );
+            Multithreading sub4 = new Multithreading(matrix, Word, nn, goal, x+nn , y + nn);
             sub.start();
             sub2.start();
             sub3.start();
@@ -38,7 +38,7 @@ public class matrixsize extends Thread{
                     }
                 }
                 if (count == goal){
-                    System.err.println("Fila "+(y+i)+",  columna ["+(x)+", "+ (x+goal-1)+"].");
+                    System.err.println("PALABRA ENCONTRADA EN Fila "+(y+i)+",  columna ["+(x)+", "+ (x+goal-1)+"].");
                     return;
                 }
             }
@@ -52,7 +52,7 @@ public class matrixsize extends Thread{
                     }
                 }
                 if (count == goal){
-                    System.err.println("Fila ["+y+", "+ (y+goal-1)+ "],  columna "+(x+i)+".");
+                    System.err.println("PALABRA ENCONTRADA EN Fila ["+y+", "+ (y+goal-1)+ "],  columna "+(x+i)+".");
                     return;
                 }
                 
