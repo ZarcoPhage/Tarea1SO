@@ -1,10 +1,17 @@
 public class matrixsize extends Thread{
+    private static short signal = 0;
     int size;
     int goal;
     int x;
     int y;
     char[][] matrix;
     String Word;
+    public static short getSignal(){
+        return signal;
+    }
+    public static void changeSignal(){
+        signal = 1;
+    }
     public  matrixsize(char[][] matrix, String Word ,int size, int goal, int x, int y){
         this.size = size;
         this.goal = goal;
@@ -25,17 +32,38 @@ public class matrixsize extends Thread{
             sub2.start();
             sub3.start();
             sub4.start();
+            
         }
         else {
-            System.err.println("listo " + x +", "+ y);
+            int count = 0;
             for (int i = 0; i < goal; i++){
-                Horizontal newHorizontal = new Horizontal(matrix, Word, goal, x, y+i);
-                newHorizontal.start();
-
+                for (int j = 0 ; j < goal ; j++){
+                    if (matrix[y+i][x+j] == Word.charAt(count) ) count++;
+                    else {
+                        count = 0;
+                        j = goal;
+                    }
+                }
+                if (count == goal){
+                    System.err.println("Fila "+(y+i)+",  columna ["+(x)+", "+ (x+goal-1)+"].");
+                    changeSignal();
+                    return;
+                }
             }
+            count = 0;
             for (int i = 0; i < goal; i++){
-                Vertical newVertical = new Vertical(matrix, Word, goal, x+i, y);
-                newVertical.start();
+                for (int j = 0 ; j < goal ; j++){
+                    if (matrix[y+j][x+i] == Word.charAt(count) ) count++;
+                    else {
+                        count = 0;
+                        j = goal;
+                    }
+                }
+                if (count == goal){
+                    System.err.println("Fila ["+y+", "+ (y+goal-1)+ "],  columna "+(x+i)+".");
+                    changeSignal();
+                    return;
+                }
                 
             }
     }
