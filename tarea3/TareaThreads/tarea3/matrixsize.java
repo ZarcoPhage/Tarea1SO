@@ -1,17 +1,10 @@
 public class matrixsize extends Thread{
-    private static short signal = 0;
     int size;
     int goal;
     int x;
     int y;
     char[][] matrix;
     String Word;
-    public static short getSignal(){
-        return signal;
-    }
-    public static void changeSignal(){
-        signal = 1;
-    }
     public  matrixsize(char[][] matrix, String Word ,int size, int goal, int x, int y){
         this.size = size;
         this.goal = goal;
@@ -46,7 +39,6 @@ public class matrixsize extends Thread{
                 }
                 if (count == goal){
                     System.err.println("Fila "+(y+i)+",  columna ["+(x)+", "+ (x+goal-1)+"].");
-                    changeSignal();
                     return;
                 }
             }
@@ -61,7 +53,6 @@ public class matrixsize extends Thread{
                 }
                 if (count == goal){
                     System.err.println("Fila ["+y+", "+ (y+goal-1)+ "],  columna "+(x+i)+".");
-                    changeSignal();
                     return;
                 }
                 
