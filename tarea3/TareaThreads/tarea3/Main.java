@@ -9,7 +9,7 @@ public class Main{
         //String targetWord = inputFilePath[0];
         //File wordSearchMatrix = new File(inputFilePath[1]);
 
-        String path = "D:\\U\\2023 2\\SO\\TareaThreads\\tarea3\\tests\\LAMBDA\\sopa_de_letras.txt";
+        String path = "D:\\U\\2023 2\\SO\\TareaThreads\\tarea3\\tests\\ESTERNOCLEIDOMASTOIDEO\\sopa_de_letras.txt";
         DataExtractor extractor = new DataExtractor(path);
         extractor.Extract();
 
@@ -24,13 +24,17 @@ public class Main{
             }
             System.out.println(" ");
         }
+
+
+        long threadStart = System.currentTimeMillis();
         System.err.println("tamaño ="+ extractor.getTargetWord().length());
         matrixsize first = new matrixsize(matrix, extractor.getTargetWord(),extractor.getDim(), extractor.getTargetWord().length(), 0, 0);
         first.start();
-        while(matrixsize.getSignal()!=1){
-            System.err.println();
-        }
-        System.err.println("Encontrado");
+        while(first.isAlive());
+        long threadEnd = System.currentTimeMillis() - threadStart;
+        System.out.println("TIEMPO THREADS: " + threadEnd);
+
+
         NormalSearch second = new NormalSearch(matrix, extractor.getTargetWord(), extractor.getTargetWord().length(),extractor.getDim());
         second.search();
 

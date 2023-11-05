@@ -32,7 +32,7 @@ public class matrixsize extends Thread{
             sub2.start();
             sub3.start();
             sub4.start();
-            
+            while(sub.isAlive()||sub2.isAlive()||sub3.isAlive()||sub4.isAlive());
         }
         else {
             int count = 0;
