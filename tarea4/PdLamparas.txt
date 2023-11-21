@@ -1,20 +1,8 @@
-persona 1, 13:41:05:184367, dMat, 13:41:05:184406, DFIS, 13:41:05:185205
-persona 2, 13:41:05:184801, dMat, 13:41:05:184825, defider, 13:41:05:187204
-persona 5, 13:41:05:186222, dMat, 13:41:05:186251, DFIS, 13:41:05:188722
-persona 7, 13:41:05:186815, dMat, 13:41:05:186843, DFIS, 13:41:05:188417
-persona 17, 13:41:05:194004, defider, 13:41:05:194022, dMat, 13:41:05:195068
-persona 12, 13:41:05:191837, dMat, 13:41:05:191873, defider, 13:41:05:193895
-persona 18, 13:41:05:194402, dMat, 13:41:05:194427, defider, 13:41:05:195146
-persona 8, 13:41:05:187109, dInf, 13:41:05:187130, dMat, 13:41:23:346322
-persona 0, 13:41:05:183983, dInf, 13:41:05:184034, DFIS, 13:41:05:189663
-persona 16, 13:41:05:193531, defider, 13:41:05:193559, DFIS, 13:41:05:194495
-persona 6, 13:41:05:186520, dInf, 13:41:05:186546, DFIS, 13:41:23:346207
-persona 4, 13:41:05:185827, dMat, 13:41:05:185865, dInf, 13:41:05:189930
-persona 3, 13:41:05:185370, DFIS, 13:41:05:185399, dInf, 13:41:05:189482
-persona 11, 13:41:05:190741, defider, 13:41:05:190803, dInf, 13:41:05:193179
-persona 14, 13:41:05:192365, dInf, 13:41:05:192384, defider, 13:42:18:855136
-persona 9, 13:41:05:187534, dInf, 13:41:05:187561, DFIS, 13:42:00:661865
-persona 15, 13:41:05:193068, DFIS, 13:41:05:193098, dInf, 13:41:40:445979
-persona 13, 13:41:05:192109, DFIS, 13:41:05:192128, dMat, 13:41:40:444914
-persona 10, 13:41:05:190258, dInf, 13:41:05:190287, dMat, 13:42:00:662137
-persona 19, 13:41:05:195288, dInf, 13:41:05:195306, dMat, 13:42:36:941881
+persona 0, 17:44:12:756782, Departamento de Mecanica, 17:44:12:756841, Departamento de Matematicas, 17:44:12:756916
+persona 1, 17:44:12:757199, Departamento de Minas, 17:44:12:757219, Departamento de Informatica, 17:44:12:757504
+persona 3, 17:44:12:758564, Departamento de Matematicas, 17:44:12:758590, DEFIDER, 17:44:12:758819
+persona 6, 17:44:12:760362, Departamento de Matematicas, 17:44:12:760376, DEFIDER, 17:44:12:761795
+persona 10, 17:44:12:762448, Departamento de Quimica, 17:44:12:762469, Departamento de Matematicas, 17:44:12:764630
+persona 7, 17:44:12:760856, DEFIDER, 17:44:12:760877, Departamento de Fisica, 17:44:12:762919
+persona 15, 17:44:12:764374, Departamento de Mecanica, 17:44:12:764394, DEFIDER, 17:44:12:765699
+persona 25, 17:44:12:770103, Departamento de Matematicas, 17:44:12:770120, Departamento de Mecanica, 17:44:12:770468

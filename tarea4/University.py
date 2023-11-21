@@ -159,7 +159,7 @@ def dInf(threadNum, nDepto):
                 in_dpto = datetime.now().strftime("%H:%M:%S:%f")
                 dmatConsulta(filaDINF[i],nDepto) #Funcion definida para procesar las consultas
                 out = filaDINF[i]
-                f = open("Departamento_de_matematicas.txt","a")
+                f = open("Departamento_de_informatica.txt","a")
                 f.write("persona " + str(out) + ", " + str(in_fila) + ", " + str(in_dpto) + ", " + str(nDepto) + "\n")
                 f.close()
             for i in range(2):
@@ -207,65 +207,159 @@ def dFis(threadNum, nDepto):
     return 1
 
 #DQUIM FUNCS
-def dQuim(threadNum):
-    print("6")
+def dQuimConsulta(thread, nDepto):
+    time.sleep(4)
+    print("Salida de {}".format(thread))
     return
+
+def dQuim(threadNum, nDepto):
+    global filaDQUIM, lockDQUIM
+    print("soy {} y entré".format(threadNum))
+    lockDQUIM.acquire()
+    print(threadNum)
+    if (len(filaDQUIM) == 6):
+        lockDQUIM.release()
+        return 0 #en caso de error se retira del departamento y se salta la apelación xD
+
+    else:
+        print("Guardo")
+        in_fila = datetime.now().strftime("%H:%M:%S:%f")
+        filaDQUIM.append(threadNum)
+
+        if (len(filaDQUIM) >= 3):
+            for i in range(3):
+                in_dpto = datetime.now().strftime("%H:%M:%S:%f")
+                dQuimConsulta(filaDQUIM[i],nDepto) #Funcion definida para procesar las consultas
+                out = filaDQUIM[i]
+                f = open("Departamento_de_quimica.txt","a")
+                f.write("persona " + str(out) + ", " + str(in_fila) + ", " + str(in_dpto) + ", " + str(nDepto) + "\n")
+                f.close()
+            for i in range(3):
+                filaDQUIM.pop(0)
+                
+    print(filaDQUIM)
+    lockDQUIM.release()
+
+    return 1
 
 #DMEC FUNCS
-def dMec(threadNum):
-    print("7")
+def dMecConsulta(thread, nDepto):
+    time.sleep(7)
+    print("Salida de {}".format(thread))
     return
+
+def dMec(threadNum, nDepto):
+    global filaDMEC, lockDMEC
+    print("soy {} y entré".format(threadNum))
+    lockDMEC.acquire()
+    print(threadNum)
+    if (len(filaDMEC) == 9):
+        lockDMEC.release()
+        return 0 #en caso de error se retira del departamento y se salta la apelación xD
+
+    else:
+        print("Guardo")
+        in_fila = datetime.now().strftime("%H:%M:%S:%f")
+        filaDMEC.append(threadNum)
+
+        if (len(filaDMEC) >= 4):
+            for i in range(4):
+                in_dpto = datetime.now().strftime("%H:%M:%S:%f")
+                dMecConsulta(filaDMEC[i],nDepto) #Funcion definida para procesar las consultas
+                out = filaDMEC[i]
+                f = open("Departamento_de_mecanica.txt","a")
+                f.write("persona " + str(out) + ", " + str(in_fila) + ", " + str(in_dpto) + ", " + str(nDepto) + "\n")
+                f.close()
+            for i in range(4):
+                filaDMEC.pop(0)
+                
+    print(filaDMEC)
+    lockDMEC.release()
+
+    return 1
+
 
 #DMIN FUNCS
-def dMinas(threadNum):
-    print("8")
+def dMinConsulta(thread, nDepto):
+    time.sleep(5)
+    print("Salida de {}".format(thread))
     return
 
-func_array = [defider,dMat,dInf,dFis,dQuim,dMec,dMinas]
+def dMin(threadNum, nDepto):
+    global filaDMIN, lockDMIN
+    print("soy {} y entré".format(threadNum))
+    lockDMIN.acquire()
+    print(threadNum)
+    if (len(filaDMIN) == 7):
+        lockDMIN.release()
+        return 0 #en caso de error se retira del departamento y se salta la apelación xD
+
+    else:
+        print("Guardo")
+        in_fila = datetime.now().strftime("%H:%M:%S:%f")
+        filaDMIN.append(threadNum)
+
+        if (len(filaDMIN) >= 2):
+            for i in range(2):
+                in_dpto = datetime.now().strftime("%H:%M:%S:%f")
+                dMinConsulta(filaDMIN[i],nDepto) #Funcion definida para procesar las consultas
+                out = filaDMIN[i]
+                f = open("Departamento_de_minas.txt","a")
+                f.write("persona " + str(out) + ", " + str(in_fila) + ", " + str(in_dpto) + ", " + str(nDepto) + "\n")
+                f.close()
+            for i in range(2):
+                filaDMIN.pop(0)
+                
+    print(filaDMIN)
+    lockDMIN.release()
+
+    return 1
+
+func_array = [defider,dMat,dInf,dFis,dQuim,dMec,dMin]
 count = 0
 
 def patioLamps(threadNum):
     entrance_t = datetime.now().strftime("%H:%M:%S:%f")
-    assign1 = random.randint(0,3)
+    assign1 = random.randint(0,6)
     match assign1:
         case 0:
-            fst_assign = "defider"                   
+            fst_assign = "DEFIDER"                   
         case 1:
-            fst_assign = "dMat"
+            fst_assign = "Departamento de Matematicas"
         case 2:
-            fst_assign = "dInf"
+            fst_assign = "Departamento de Informatica"
         case 3:
-            fst_assign = "DFIS"
+            fst_assign = "Departamento de Fisica"
         case 4:
-            fst_assign = "dQuim"
+            fst_assign = "Departamento de Quimica"
         case 5:
-            fst_assign = "dMec"
+            fst_assign = "Departamento de Mecanica"
         case 6:
-            fst_assign = "dMinas"
+            fst_assign = "Departamento de Minas"
     
     in_dep1 = datetime.now().strftime("%H:%M:%S:%f")
     func_array[assign1](threadNum,1)
     #out_dep2 = time.now()
 
-    assign2 = random.randint(0,3)
+    assign2 = random.randint(0,6)
     while (assign2 == assign1):
-        assign2 = random.randint(0,3)
+        assign2 = random.randint(0,6)
 
     match assign2:
         case 0:
-            snd_assign = "defider"
+            snd_assign = "DEFIDER"                   
         case 1:
-            snd_assign = "dMat"
+            snd_assign = "Departamento de Matematicas"
         case 2:
-            snd_assign = "dInf"
+            snd_assign = "Departamento de Informatica"
         case 3:
-            snd_assign = "DFIS"
+            snd_assign = "Departamento de Fisica"
         case 4:
-            snd_assign = "dQuim"
+            snd_assign = "Departamento de Quimica"
         case 5:
-            snd_assign = "dMec"
+            snd_assign = "Departamento de Mecanica"
         case 6:
-            snd_assign = "dMinas"
+            snd_assign = "Departamento de Minas"
 
     in_dep2 = datetime.now().strftime("%H:%M:%S:%f")
     func_array[assign2](threadNum,2)
@@ -301,13 +395,13 @@ f_dFis.close()
 f_dInf.close()
 f_salida.close()
 
-for thrd in range(0,20):
+for thrd in range(0,500):
     t = threading.Thread(target=patioLamps,args=(thrd,))
     count = count + 1
     thread_list.append(t)
 
 print("threads created: " + str(count))
 
-for thrd in range(0,20):
+for thrd in range(0,500):
     thread_list[thrd].start()
     #time.sleep(2)
